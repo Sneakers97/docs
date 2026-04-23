@@ -1,0 +1,150 @@
+---
+title: 'Edit Profile'
+api: 'PATCH https://api.infinipost.co/v1/accounts/{id}/profile'
+description: 'Update account profile information'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique account identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string">
+  New display name.
+  
+  **Restrictions:**
+  - TikTok: Can change once every 7 days (after Day 5 of warmup)
+  - Instagram: Can change once every 14 days
+</ParamField>
+
+<ParamField body="username" type="string">
+  New username.
+  
+  **Restrictions:**
+  - TikTok: Can only be set after Day 5 of warmup, then once every 7 days
+  - Instagram: No restriction on username changes
+</ParamField>
+
+<ParamField body="bio" type="string">
+  New bio/description. No restrictions on frequency.
+</ParamField>
+
+<ParamField body="profilePictureUrl" type="string">
+  URL of new profile picture. Must be a publicly accessible image URL.
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Account identifier.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Updated display name.
+</ResponseField>
+
+<ResponseField name="username" type="string">
+  Updated username.
+</ResponseField>
+
+<ResponseField name="bio" type="string">
+  Updated bio.
+</ResponseField>
+
+<ResponseField name="profilePictureUrl" type="string">
+  Updated profile picture URL.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  ISO 8601 timestamp of when the profile was updated.
+</ResponseField>
+
+<ResponseField name="nextNameChangeAllowed" type="string">
+  ISO 8601 timestamp of when the name can be changed again (TikTok/Instagram only).
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X PATCH https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/profile \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bio": "Premium fashion content daily 👗✨",
+    "profilePictureUrl": "https://example.com/new-pic.jpg"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/profile', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    bio: 'Premium fashion content daily 👗✨',
+    profilePictureUrl: 'https://example.com/new-pic.jpg'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.patch(
+    'https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/profile',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'bio': 'Premium fashion content daily 👗✨',
+        'profilePictureUrl': 'https://example.com/new-pic.jpg'
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "id": "acc_1a2b3c4d5e",
+  "name": "Fashion Insider",
+  "username": "fashioninsider",
+  "bio": "Premium fashion content daily 👗✨",
+  "profilePictureUrl": "https://storage.googleapis.com/...",
+  "updatedAt": "2024-04-21T19:45:00Z"
+}
+```
+
+</ResponseExample>
+
+<Warning>
+  **Name Change Restrictions**
+  
+  Attempting to change the name before the allowed time will return a `429` error with the next allowed change date.
+</Warning>
+
+<ResponseExample>
+
+```json Name Change Too Soon
+{
+  "error": {
+    "code": "name_change_restricted",
+    "message": "You can change your TikTok name again on 2024-04-28",
+    "nextAllowedAt": "2024-04-28T10:00:00Z"
+  }
+}
+```
+
+</ResponseExample>

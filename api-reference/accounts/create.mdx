@@ -1,0 +1,182 @@
+---
+title: 'Create Account'
+api: 'POST https://api.infinipost.co/v1/accounts'
+description: 'Create a new TikTok or Instagram account'
+---
+
+## Request Body
+
+<ParamField body="platform" type="string" required>
+  The platform to create an account on. Either `tiktok` or `instagram`.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  The display name for the account (e.g., "John Smith").
+</ParamField>
+
+<ParamField body="username" type="string">
+  The desired username. If not provided, one will be auto-generated.
+  
+  **Note:** TikTok usernames can only be set after Day 5 of warmup.
+</ParamField>
+
+<ParamField body="bio" type="string">
+  Account bio/description.
+</ParamField>
+
+<ParamField body="profilePictureUrl" type="string">
+  URL of the profile picture to use. Must be a publicly accessible image URL.
+</ParamField>
+
+<ParamField body="autoStartWarmup" type="boolean" default="false">
+  Automatically start the warmup process after account creation.
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the account.
+</ResponseField>
+
+<ResponseField name="platform" type="string">
+  The platform (`tiktok` or `instagram`).
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  The account's display name.
+</ResponseField>
+
+<ResponseField name="username" type="string">
+  The account's username (may be null for new TikTok accounts).
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `pending`, `active`, `warmup`, or `failed`.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 timestamp of when the account was created.
+</ResponseField>
+
+<ResponseField name="warmupStatus" type="object">
+  Warmup configuration and status.
+  
+  <Expandable title="properties">
+    <ResponseField name="enabled" type="boolean">
+      Whether warmup is currently active.
+    </ResponseField>
+    
+    <ResponseField name="currentDay" type="number">
+      Current day of the 7-day warmup period.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/accounts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "platform": "tiktok",
+    "name": "Fashion Insider",
+    "bio": "Daily fashion tips and trends 👗",
+    "autoStartWarmup": true
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/accounts', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    platform: 'tiktok',
+    name: 'Fashion Insider',
+    bio: 'Daily fashion tips and trends 👗',
+    autoStartWarmup: true
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/accounts',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'platform': 'tiktok',
+        'name': 'Fashion Insider',
+        'bio': 'Daily fashion tips and trends 👗',
+        'autoStartWarmup': True
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "id": "acc_1a2b3c4d5e",
+  "platform": "tiktok",
+  "name": "Fashion Insider",
+  "username": null,
+  "bio": "Daily fashion tips and trends 👗",
+  "status": "pending",
+  "warmupStatus": {
+    "enabled": true,
+    "currentDay": 1
+  },
+  "createdAt": "2024-04-21T19:30:00Z"
+}
+```
+
+</ResponseExample>
+
+## Account Creation Process
+
+1. **Provisioning** (30-60 seconds): Cloud phone infrastructure is allocated
+2. **Account Setup** (60-120 seconds): TikTok/Instagram account is created
+3. **Status Update**: Account status changes from `pending` to `active`
+4. **Warmup** (optional): If `autoStartWarmup` is true, warmup begins immediately
+
+<Info>
+  **TikTok Username Restriction:** New TikTok accounts cannot set a custom username until Day 5 of warmup. The `username` field will be `null` until then.
+</Info>
+
+## Error Responses
+
+<ResponseExample>
+
+```json Username Already Taken
+{
+  "error": {
+    "code": "username_taken",
+    "message": "The username 'fashioninsider' is already taken"
+  }
+}
+```
+
+```json Account Limit Reached
+{
+  "error": {
+    "code": "account_limit_exceeded",
+    "message": "You have reached your account limit. Upgrade your plan to create more accounts."
+  }
+}
+```
+
+</ResponseExample>

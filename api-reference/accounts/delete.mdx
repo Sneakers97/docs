@@ -1,0 +1,72 @@
+---
+title: 'Delete Account'
+api: 'DELETE https://api.infinipost.co/v1/accounts/{id}'
+description: 'Permanently delete an account'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique account identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  The deleted account's identifier.
+</ResponseField>
+
+<ResponseField name="deleted" type="boolean">
+  Always `true` if deletion was successful.
+</ResponseField>
+
+<ResponseField name="deletedAt" type="string">
+  ISO 8601 timestamp of deletion.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X DELETE https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e', {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.delete(
+    'https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "id": "acc_1a2b3c4d5e",
+  "deleted": true,
+  "deletedAt": "2024-04-21T19:50:00Z"
+}
+```
+
+</ResponseExample>
+
+<Warning>
+  **This action is permanent!** Deleted accounts cannot be recovered. All associated data, posts, and analytics will be permanently removed.
+</Warning>

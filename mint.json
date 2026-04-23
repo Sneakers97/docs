@@ -1,0 +1,94 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Infinipost API",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#7c3aed",
+    "light": "#a78bfa",
+    "dark": "#6d28d9",
+    "anchors": {
+      "from": "#7c3aed",
+      "to": "#a78bfa"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Dashboard",
+      "url": "https://infinipost.co"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://infinipost.co"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/infinipost"
+    },
+    {
+      "name": "Support",
+      "icon": "envelope",
+      "url": "mailto:drew.arlint@gmail.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication"
+      ]
+    },
+    {
+      "group": "Accounts",
+      "pages": [
+        "api-reference/accounts/create",
+        "api-reference/accounts/list",
+        "api-reference/accounts/get",
+        "api-reference/accounts/edit-profile",
+        "api-reference/accounts/delete"
+      ]
+    },
+    {
+      "group": "Warmup",
+      "pages": [
+        "api-reference/warmup/start",
+        "api-reference/warmup/stop",
+        "api-reference/warmup/configure"
+      ]
+    },
+    {
+      "group": "Posts",
+      "pages": [
+        "api-reference/posts/create",
+        "api-reference/posts/get",
+        "api-reference/posts/delete"
+      ]
+    },
+    {
+      "group": "Engagement",
+      "pages": [
+        "api-reference/engagement/comment-on-post",
+        "api-reference/engagement/reply-to-comment",
+        "api-reference/engagement/get-comments"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/infinipost",
+    "github": "https://github.com/infinipost"
+  }
+}

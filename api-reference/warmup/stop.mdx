@@ -1,0 +1,85 @@
+---
+title: 'Stop Warmup'
+api: 'POST https://api.infinipost.co/v1/accounts/{id}/warmup/stop'
+description: 'Stop the warmup process for an account'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique account identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="accountId" type="string">
+  The account identifier.
+</ResponseField>
+
+<ResponseField name="warmupStatus" type="object">
+  Updated warmup status.
+  
+  <Expandable title="properties">
+    <ResponseField name="enabled" type="boolean">
+      Always `false` after stopping.
+    </ResponseField>
+    
+    <ResponseField name="currentDay" type="number">
+      Day when warmup was stopped.
+    </ResponseField>
+    
+    <ResponseField name="stoppedAt" type="string">
+      ISO 8601 timestamp of when warmup was stopped.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/warmup/stop \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/warmup/stop', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/warmup/stop',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "accountId": "acc_1a2b3c4d5e",
+  "warmupStatus": {
+    "enabled": false,
+    "currentDay": 4,
+    "stoppedAt": "2024-04-21T20:05:00Z"
+  }
+}
+```
+
+</ResponseExample>
+
+<Warning>
+  Stopping warmup before Day 7 may reduce account performance and increase the risk of platform restrictions.
+</Warning>
