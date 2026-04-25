@@ -55,17 +55,8 @@
     {
       "group": "Phones",
       "pages": [
-        "api-reference/phones/create"
-      ]
-    },
-    {
-      "group": "Accounts",
-      "pages": [
-        "api-reference/accounts/create",
-        "api-reference/accounts/list",
-        "api-reference/accounts/get",
-        "api-reference/accounts/edit-profile",
-        "api-reference/accounts/delete"
+        "api-reference/phones/create",
+        "api-reference/phones/list"
       ]
     },
     {
