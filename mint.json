@@ -53,6 +53,12 @@
       ]
     },
     {
+      "group": "Phones",
+      "pages": [
+        "api-reference/phones/create"
+      ]
+    },
+    {
       "group": "Accounts",
       "pages": [
         "api-reference/accounts/create",
