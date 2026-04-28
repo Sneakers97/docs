@@ -58,9 +58,18 @@
               {
                 "group": "Posts",
                 "pages": [
-                  "api-reference/posts/create",
+                  "api-reference/posts/create-video",
+                  "api-reference/posts/create-slideshow",
                   "api-reference/posts/get",
                   "api-reference/posts/delete"
+                ]
+              },
+              {
+                "group": "Media",
+                "pages": [
+                  "api-reference/media/upload-sound",
+                  "api-reference/media/list-sounds",
+                  "api-reference/media/delete-sound"
                 ]
               },
               {

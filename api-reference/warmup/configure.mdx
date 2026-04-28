@@ -1,27 +1,23 @@
 ---
 title: 'Configure Warmup'
-api: 'PATCH https://api.infinipost.co/v1/accounts/{id}/warmup/configure'
+api: 'PATCH https://api.infinipost.co/v1/accounts/{accountId}/warmup/configure'
 description: 'Update warmup settings for an active warmup'
 ---
 
 ## Path Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="accountId" type="string" required>
   The unique account identifier.
 </ParamField>
 
 ## Request Body
 
+<ParamField body="duration" type="number">
+  Update number of days for the warmup process (3-14 days).
+</ParamField>
+
 <ParamField body="keywords" type="array">
   Update keywords for content discovery.
-</ParamField>
-
-<ParamField body="profilesToFollow" type="array">
-  Update list of profiles to follow.
-</ParamField>
-
-<ParamField body="postsPerDay" type="number">
-  Update number of posts per day (1-5).
 </ParamField>
 
 ## Response
@@ -30,8 +26,38 @@ description: 'Update warmup settings for an active warmup'
   The account identifier.
 </ResponseField>
 
+<ResponseField name="platform" type="string">
+  Platform: `tiktok` or `instagram`.
+</ResponseField>
+
 <ResponseField name="warmupStatus" type="object">
   Updated warmup configuration.
+  
+  <Expandable title="properties">
+    <ResponseField name="enabled" type="boolean">
+      Whether warmup is currently active.
+    </ResponseField>
+    
+    <ResponseField name="startedAt" type="string">
+      ISO 8601 timestamp of when warmup started.
+    </ResponseField>
+    
+    <ResponseField name="completionDate" type="string">
+      ISO 8601 timestamp of when warmup is expected to complete.
+    </ResponseField>
+    
+    <ResponseField name="duration" type="number">
+      Total duration in days.
+    </ResponseField>
+    
+    <ResponseField name="keywords" type="array">
+      Keywords being used for content discovery.
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="string">
+      ISO 8601 timestamp of when configuration was updated.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <RequestExample>
@@ -42,7 +68,7 @@ curl -X PATCH https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/warmup/config
   -H "Content-Type: application/json" \
   -d '{
     "keywords": ["streetwear", "sneakers", "hypebeast"],
-    "postsPerDay": 4
+    "duration": 10
   }'
 ```
 
@@ -55,7 +81,7 @@ const response = await fetch('https://api.infinipost.co/v1/accounts/acc_1a2b3c4d
   },
   body: JSON.stringify({
     keywords: ['streetwear', 'sneakers', 'hypebeast'],
-    postsPerDay: 4
+    duration: 10
   })
 });
 
@@ -73,7 +99,7 @@ response = requests.patch(
     },
     json={
         'keywords': ['streetwear', 'sneakers', 'hypebeast'],
-        'postsPerDay': 4
+        'duration': 10
     }
 )
 
@@ -87,12 +113,14 @@ print(response.json())
 ```json Response
 {
   "accountId": "acc_1a2b3c4d5e",
+  "platform": "tiktok",
   "warmupStatus": {
     "enabled": true,
-    "currentDay": 3,
+    "startedAt": "2024-04-21T20:00:00Z",
+    "completionDate": "2024-05-01T20:00:00Z",
+    "duration": 10,
     "keywords": ["streetwear", "sneakers", "hypebeast"],
-    "postsPerDay": 4,
-    "updatedAt": "2024-04-21T20:10:00Z"
+    "updatedAt": "2024-04-23T20:10:00Z"
   }
 }
 ```

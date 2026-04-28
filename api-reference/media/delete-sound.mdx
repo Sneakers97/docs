@@ -1,0 +1,83 @@
+---
+title: 'Delete Sound'
+api: 'DELETE https://api.infinipost.co/v1/media/sounds/{soundId}'
+description: 'Delete an uploaded sound'
+---
+
+## Path Parameters
+
+<ParamField path="soundId" type="string" required>
+  The unique sound identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the sound was deleted successfully.
+</ResponseField>
+
+<ResponseField name="soundId" type="string">
+  ID of the deleted sound.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Confirmation message.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X DELETE https://api.infinipost.co/v1/media/sounds/sound_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/media/sounds/sound_abc123', {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.delete(
+    'https://api.infinipost.co/v1/media/sounds/sound_abc123',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true,
+  "soundId": "sound_abc123",
+  "message": "Sound deleted successfully"
+}
+```
+
+</ResponseExample>
+
+<Warning>
+  Deleting a sound does not affect posts that are already using it. Only new posts will be unable to use the deleted sound.
+</Warning>
+
+## Error Responses
+
+```json Sound Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Sound sound_abc123 not found"
+  }
+}
+```

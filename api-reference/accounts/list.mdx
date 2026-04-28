@@ -1,7 +1,7 @@
 ---
 title: 'List Accounts'
 api: 'GET https://api.infinipost.co/v1/accounts'
-description: 'Retrieve a list of all your accounts'
+description: 'Retrieve a list of all your TikTok and Instagram accounts'
 ---
 
 ## Query Parameters
@@ -11,46 +11,106 @@ description: 'Retrieve a list of all your accounts'
 </ParamField>
 
 <ParamField query="status" type="string">
-  Filter by status: `active`, `warmup`, `pending`, or `failed`.
+  Filter by account status: `created_pending_warmup`, `warming_up`, or `ready`.
 </ParamField>
 
 <ParamField query="limit" type="number" default="50">
   Number of accounts to return (max 100).
 </ParamField>
 
-<ParamField query="offset" type="number" default="0">
-  Number of accounts to skip for pagination.
+<ParamField query="cursor" type="string">
+  Cursor for pagination. Pass the `nextCursor` value from the previous response to get the next page. Omit for the first page.
 </ParamField>
 
 ## Response
 
 <ResponseField name="data" type="array">
   Array of account objects.
-</ResponseField>
 
-<ResponseField name="total" type="number">
-  Total number of accounts matching the filters.
+  <Expandable title="Account object properties">
+    <ResponseField name="accountId" type="string">
+      Unique identifier for the account.
+    </ResponseField>
+
+    <ResponseField name="phoneId" type="string">
+      ID of the phone this account belongs to.
+    </ResponseField>
+
+    <ResponseField name="platform" type="string">
+      Platform: `tiktok` or `instagram`.
+    </ResponseField>
+
+    <ResponseField name="name" type="string">
+      Display name of the account.
+    </ResponseField>
+
+    <ResponseField name="username" type="string">
+      Account username. For TikTok accounts, this is set on Day 5 of warmup and may be empty before then.
+    </ResponseField>
+
+    <ResponseField name="bio" type="string">
+      Account bio.
+    </ResponseField>
+
+    <ResponseField name="accountStatus" type="string">
+      Current account status: `created_pending_warmup`, `warming_up`, or `ready`.
+    </ResponseField>
+
+    <ResponseField name="warmupDay" type="number">
+      Current day of the 7-day warmup period. `0` if warmup has not started.
+    </ResponseField>
+
+    <ResponseField name="warmupStartDate" type="string">
+      ISO 8601 date when warmup started. `null` if warmup has not started.
+    </ResponseField>
+
+    <ResponseField name="warmupCompletionDate" type="string">
+      ISO 8601 date when warmup will complete. `null` if warmup has not started.
+    </ResponseField>
+
+    <ResponseField name="profilePicUrl" type="string">
+      URL of the account's profile picture.
+    </ResponseField>
+
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of when the account was created.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <ResponseField name="hasMore" type="boolean">
   Whether there are more accounts beyond this page.
 </ResponseField>
 
+<ResponseField name="nextCursor" type="string">
+  Cursor to pass as the `cursor` query parameter to retrieve the next page. `null` when there are no more pages.
+</ResponseField>
+
 <RequestExample>
 
 ```bash cURL
+# First page
 curl https://api.infinipost.co/v1/accounts?platform=tiktok&limit=10 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Next page (using cursor from previous response)
+curl https://api.infinipost.co/v1/accounts?platform=tiktok&limit=10&cursor=cGhvbmVfYWJjMTIz \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```javascript JavaScript
+// First page
 const response = await fetch('https://api.infinipost.co/v1/accounts?platform=tiktok&limit=10', {
-  headers: {
-    'Authorization': 'Bearer YOUR_API_KEY'
-  }
+  headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
 });
-
 const data = await response.json();
+
+// Next page
+if (data.hasMore) {
+  const nextResponse = await fetch(`https://api.infinipost.co/v1/accounts?platform=tiktok&limit=10&cursor=${data.nextCursor}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+}
 ```
 
 ```python Python
@@ -62,7 +122,15 @@ response = requests.get(
     params={'platform': 'tiktok', 'limit': 10}
 )
 
-print(response.json())
+data = response.json()
+
+# Next page
+if data['hasMore']:
+    next_response = requests.get(
+        'https://api.infinipost.co/v1/accounts',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'},
+        params={'platform': 'tiktok', 'limit': 10, 'cursor': data['nextCursor']}
+    )
 ```
 
 </RequestExample>
@@ -73,32 +141,36 @@ print(response.json())
 {
   "data": [
     {
-      "id": "acc_1a2b3c4d5e",
+      "accountId": "acc_1a2b3c4d5e",
+      "phoneId": "phone_abc123",
       "platform": "tiktok",
       "name": "Fashion Insider",
       "username": "fashioninsider",
-      "status": "active",
-      "warmupStatus": {
-        "enabled": true,
-        "currentDay": 3
-      },
+      "bio": "Daily fashion tips and trends 👗",
+      "accountStatus": "warming_up",
+      "warmupDay": 3,
+      "warmupStartDate": "2024-04-19T10:00:00Z",
+      "warmupCompletionDate": "2024-04-26T10:00:00Z",
+      "profilePicUrl": "https://storage.googleapis.com/...",
       "createdAt": "2024-04-19T10:00:00Z"
     },
     {
-      "id": "acc_9f8e7d6c5b",
+      "accountId": "acc_9f8e7d6c5b",
+      "phoneId": "phone_def456",
       "platform": "tiktok",
       "name": "Tech Reviews",
       "username": "techreviews2024",
-      "status": "warmup",
-      "warmupStatus": {
-        "enabled": true,
-        "currentDay": 7
-      },
+      "bio": "Honest tech reviews every week 📱",
+      "accountStatus": "ready",
+      "warmupDay": 7,
+      "warmupStartDate": "2024-04-15T14:30:00Z",
+      "warmupCompletionDate": "2024-04-22T14:30:00Z",
+      "profilePicUrl": "https://storage.googleapis.com/...",
       "createdAt": "2024-04-15T14:30:00Z"
     }
   ],
-  "total": 23,
-  "hasMore": true
+  "hasMore": true,
+  "nextCursor": "cGhvbmVfYWJjMTIz"
 }
 ```
 

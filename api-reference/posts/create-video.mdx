@@ -1,0 +1,176 @@
+---
+title: 'Create Video Post'
+api: 'POST https://api.infinipost.co/v1/posts/video'
+description: 'Create and schedule a video post to one or more accounts'
+---
+
+## Request Body
+
+<ParamField body="accountIds" type="array" required>
+  Array of account IDs to post to (e.g., `["acc_123", "acc_456"]`).
+</ParamField>
+
+<ParamField body="contentUrl" type="string" required>
+  URL of the video file to post.
+</ParamField>
+
+<ParamField body="caption" type="string">
+  Post caption/description.
+</ParamField>
+
+<ParamField body="soundId" type="string">
+  ID of a TikTok sound to attach to the post.
+  
+  **Platform Support:**
+  - TikTok: Supported
+  - Instagram: Not supported
+  
+  **Usage:**
+  1. Import the audio using the [Upload Sound](/api-reference/media/upload-sound) endpoint with a TikTok video URL
+  2. The endpoint returns a `soundId`
+  3. Use that `soundId` in this field
+  
+  **Example workflow:**
+  ```javascript
+  // Step 1: Import audio from a TikTok video
+  const soundResponse = await fetch('https://api.infinipost.co/v1/media/sounds', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' },
+    body: JSON.stringify({
+      soundUrl: 'https://www.tiktok.com/@username/video/7123456789'
+    })
+  });
+  const { soundId } = await soundResponse.json();
+  
+  // Step 2: Use the returned soundId in your post
+  const postResponse = await fetch('https://api.infinipost.co/v1/posts/video', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' },
+    body: JSON.stringify({
+      accountIds: ['acc_123456'],
+      contentUrl: 'https://example.com/video.mp4',
+      soundId: soundId
+    })
+  });
+  ```
+</ParamField>
+
+<ParamField body="scheduledTime" type="string">
+  ISO 8601 timestamp for when to post. If not provided, posts immediately.
+</ParamField>
+
+## Response
+
+<ResponseField name="posts" type="array">
+  Array of created post objects (one per account).
+  
+  <Expandable title="properties">
+    <ResponseField name="postId" type="string">
+      Unique identifier for the post.
+    </ResponseField>
+    
+    <ResponseField name="accountId" type="string">
+      Account ID this post belongs to.
+    </ResponseField>
+    
+    <ResponseField name="platform" type="string">
+      Platform: `tiktok` or `instagram`.
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Post status: `scheduled`, `processing`, `posted`, or `failed`.
+    </ResponseField>
+    
+    <ResponseField name="scheduledTime" type="string">
+      When the post is scheduled to go live.
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of when the post was created.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/posts/video \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accountIds": ["acc_123", "acc_456"],
+    "contentUrl": "https://example.com/video.mp4",
+    "caption": "Check out this amazing content! #viral",
+    "soundId": "sound_abc123",
+    "scheduledTime": "2024-04-22T12:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/posts/video', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    accountIds: ['acc_123', 'acc_456'],
+    contentUrl: 'https://example.com/video.mp4',
+    caption: 'Check out this amazing content! #viral',
+    soundId: 'sound_abc123',
+    scheduledTime: '2024-04-22T12:00:00Z'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/posts/video',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'accountIds': ['acc_123', 'acc_456'],
+        'contentUrl': 'https://example.com/video.mp4',
+        'caption': 'Check out this amazing content! #viral',
+        'soundId': 'sound_abc123',
+        'scheduledTime': '2024-04-22T12:00:00Z'
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "posts": [
+    {
+      "postId": "post_abc123",
+      "accountId": "acc_123",
+      "platform": "tiktok",
+      "status": "scheduled",
+      "scheduledTime": "2024-04-22T12:00:00Z",
+      "createdAt": "2024-04-21T20:15:00Z"
+    },
+    {
+      "postId": "post_def456",
+      "accountId": "acc_456",
+      "platform": "instagram",
+      "status": "scheduled",
+      "scheduledTime": "2024-04-22T12:00:00Z",
+      "createdAt": "2024-04-21T20:15:00Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>

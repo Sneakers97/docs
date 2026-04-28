@@ -1,18 +1,18 @@
 ---
 title: 'Delete Account'
-api: 'DELETE https://api.infinipost.co/v1/accounts/{id}'
+api: 'DELETE https://api.infinipost.co/v1/accounts/{accountId}'
 description: 'Permanently delete an account'
 ---
 
 ## Path Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="accountId" type="string" required>
   The unique account identifier.
 </ParamField>
 
 ## Response
 
-<ResponseField name="id" type="string">
+<ResponseField name="accountId" type="string">
   The deleted account's identifier.
 </ResponseField>
 
@@ -59,7 +59,7 @@ print(response.json())
 
 ```json Response
 {
-  "id": "acc_1a2b3c4d5e",
+  "accountId": "acc_1a2b3c4d5e",
   "deleted": true,
   "deletedAt": "2024-04-21T19:50:00Z"
 }

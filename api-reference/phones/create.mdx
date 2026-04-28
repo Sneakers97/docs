@@ -1,45 +1,43 @@
 ---
 title: 'Create Phone'
 api: 'POST https://api.infinipost.co/v1/phones'
-description: 'Provision a new cloud phone for running TikTok/Instagram accounts'
+description: 'Provision a new phone for running TikTok/Instagram accounts'
 ---
 
 ## Request Body
 
-<ParamField body="quantity" type="number" default="1">
-  Number of phones to create (1-100).
-</ParamField>
-
-<ParamField body="region" type="string" default="us">
-  Geographic region for the cloud phone. Currently only `us` is supported.
+<ParamField body="phoneName" type="string">
+  Custom name for the phone (optional). If not provided, a default name will be generated.
 </ParamField>
 
 ## Response
 
-<ResponseField name="phones" type="array">
-  Array of created phone objects.
-  
-  <Expandable title="properties">
-    <ResponseField name="id" type="string">
-      Unique identifier for the phone.
-    </ResponseField>
-    
-    <ResponseField name="geelarkPhoneId" type="string">
-      GeeLark cloud phone ID.
-    </ResponseField>
-    
-    <ResponseField name="status" type="string">
-      Current status: `provisioning`, `ready`, or `failed`.
-    </ResponseField>
-    
-    <ResponseField name="region" type="string">
-      Geographic region.
-    </ResponseField>
-    
-    <ResponseField name="createdAt" type="string">
-      ISO 8601 timestamp.
-    </ResponseField>
-  </Expandable>
+<ResponseField name="success" type="boolean">
+  Whether the phone was created successfully (`true` or `false`).
+</ResponseField>
+
+<ResponseField name="phoneId" type="string">
+  Unique identifier for the phone.
+</ResponseField>
+
+<ResponseField name="phoneSlot" type="number">
+  The assigned phone slot number.
+</ResponseField>
+
+<ResponseField name="proxyId" type="string">
+  ID of the proxy assigned to this phone.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `pending_setup`, `ready`, or `failed`.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message confirming phone creation.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 timestamp of when the phone was created.
 </ResponseField>
 
 <RequestExample>
@@ -49,8 +47,7 @@ curl -X POST https://api.infinipost.co/v1/phones \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "quantity": 5,
-    "region": "us"
+    "phoneName": "My Fashion Account Phone"
   }'
 ```
 
@@ -62,8 +59,7 @@ const response = await fetch('https://api.infinipost.co/v1/phones', {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    quantity: 5,
-    region: 'us'
+    phoneName: 'My Fashion Account Phone'
   })
 });
 
@@ -80,8 +76,7 @@ response = requests.post(
         'Content-Type': 'application/json'
     },
     json={
-        'quantity': 5,
-        'region': 'us'
+        'phoneName': 'My Fashion Account Phone'
     }
 )
 
@@ -94,22 +89,23 @@ print(response.json())
 
 ```json Response
 {
-  "phones": [
-    {
-      "id": "phone_abc123",
-      "geelarkPhoneId": "557536075321468390",
-      "status": "provisioning",
-      "region": "us",
-      "createdAt": "2024-04-21T20:00:00Z"
-    },
-    {
-      "id": "phone_def456",
-      "geelarkPhoneId": "557536075321468391",
-      "status": "provisioning",
-      "region": "us",
-      "createdAt": "2024-04-21T20:00:00Z"
-    }
-  ]
+  "success": true,
+  "phoneId": "phone_abc123",
+  "phoneSlot": 1,
+  "proxyId": "proxy_xyz789",
+  "status": "pending_setup",
+  "message": "Phone created successfully",
+  "createdAt": "2024-04-21T20:00:00Z"
+}
+```
+
+```json Failed Response
+{
+  "success": false,
+  "error": {
+    "code": "internal",
+    "message": "Failed to create phone: Unable to allocate resources"
+  }
 }
 ```
 
@@ -117,40 +113,44 @@ print(response.json())
 
 ## Provisioning Process
 
-1. **Request Submitted** (instant): Phone provisioning requests are queued
-2. **Infrastructure Allocation** (30-90 seconds): Cloud phone resources are allocated
-3. **Status Update**: Phone status changes from `provisioning` to `ready`
-4. **Ready for Accounts**: Once `ready`, you can create TikTok/Instagram accounts on the phone
-
-<Info>
-  Phones are automatically configured with US-based proxies and proper device fingerprints to avoid platform detection.
-</Info>
+1. **Request Submitted** (instant): Phone provisioning request is queued
+2. **Phone Slot Assignment**: System assigns next available phone slot
+3. **Infrastructure Allocation** (30-90 seconds): Phone resources are allocated
 
 ## Error Responses
 
 ```json Phone Limit Reached
 {
   "error": {
-    "code": "phone_limit_exceeded",
-    "message": "You have reached your phone limit. Upgrade your plan to provision more phones."
+    "code": "resource-exhausted",
+    "message": "You've reached your phone limit (5). Please upgrade your plan."
   }
 }
 ```
 
-```json Invalid Quantity
+```json User Not Found
 {
   "error": {
-    "code": "invalid_quantity",
-    "message": "Quantity must be between 1 and 100"
+    "code": "not-found",
+    "message": "User not found"
   }
 }
 ```
 
-```json Invalid Region
+```json API Error
 {
   "error": {
-    "code": "invalid_region",
-    "message": "Region 'eu' is not supported. Currently only 'us' is available."
+    "code": "internal",
+    "message": "API error: Unable to allocate resources"
+  }
+}
+```
+
+```json Unauthenticated
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "User must be authenticated"
   }
 }
 ```

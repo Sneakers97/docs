@@ -1,12 +1,12 @@
 ---
 title: 'Stop Warmup'
-api: 'POST https://api.infinipost.co/v1/accounts/{id}/warmup/stop'
+api: 'POST https://api.infinipost.co/v1/accounts/{accountId}/warmup/stop'
 description: 'Stop the warmup process for an account'
 ---
 
 ## Path Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="accountId" type="string" required>
   The unique account identifier.
 </ParamField>
 
@@ -14,6 +14,10 @@ description: 'Stop the warmup process for an account'
 
 <ResponseField name="accountId" type="string">
   The account identifier.
+</ResponseField>
+
+<ResponseField name="platform" type="string">
+  Platform: `tiktok` or `instagram`.
 </ResponseField>
 
 <ResponseField name="warmupStatus" type="object">
@@ -24,12 +28,16 @@ description: 'Stop the warmup process for an account'
       Always `false` after stopping.
     </ResponseField>
     
-    <ResponseField name="currentDay" type="number">
-      Day when warmup was stopped.
-    </ResponseField>
-    
     <ResponseField name="stoppedAt" type="string">
       ISO 8601 timestamp of when warmup was stopped.
+    </ResponseField>
+    
+    <ResponseField name="startedAt" type="string">
+      ISO 8601 timestamp of when warmup originally started.
+    </ResponseField>
+    
+    <ResponseField name="duration" type="number">
+      Total duration that was configured (in days).
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -70,10 +78,12 @@ print(response.json())
 ```json Response
 {
   "accountId": "acc_1a2b3c4d5e",
+  "platform": "tiktok",
   "warmupStatus": {
     "enabled": false,
-    "currentDay": 4,
-    "stoppedAt": "2024-04-21T20:05:00Z"
+    "stoppedAt": "2024-04-25T20:05:00Z",
+    "startedAt": "2024-04-21T20:00:00Z",
+    "duration": 7
   }
 }
 ```
@@ -81,5 +91,5 @@ print(response.json())
 </ResponseExample>
 
 <Warning>
-  Stopping warmup before Day 7 may reduce account performance and increase the risk of platform restrictions.
+  Stopping warmup early may reduce account performance and increase the risk of platform restrictions.
 </Warning>

@@ -1,19 +1,32 @@
 ---
 title: 'Comment on Post'
-api: 'POST https://api.infinipost.co/v1/posts/{id}/comments'
-description: 'Add a comment to a post'
+api: 'POST https://api.infinipost.co/v1/comments'
+description: 'Add a comment to one or more TikTok posts from one of your accounts'
 ---
 
-## Path Parameters
-
-<ParamField path="id" type="string" required>
-  The post ID to comment on (can be your own post or another user's).
-</ParamField>
+<Info>
+  **TikTok only.** Commenting is currently supported on TikTok posts only.
+</Info>
 
 ## Request Body
 
 <ParamField body="accountId" type="string" required>
   The account ID to comment from.
+</ParamField>
+
+<ParamField body="postLinks" type="array" required>
+  Array of TikTok post links to comment on (your own posts or other users').
+
+  **How to get a post link:**
+  1. Open TikTok and navigate to the post you want to comment on
+  2. Tap the **Send to** arrow button in the bottom right corner of the post
+  3. Tap **Copy link**
+
+  The copied link will look like: `https://www.tiktok.com/@username/video/7123456789012345678`
+</ParamField>
+
+<ParamField body="scheduledTime" type="string">
+  ISO 8601 timestamp for when to post the comment. If not provided, comments immediately.
 </ParamField>
 
 <ParamField body="text" type="string" required>
@@ -22,40 +35,50 @@ description: 'Add a comment to a post'
 
 ## Response
 
-<ResponseField name="id" type="string">
-  Unique comment identifier.
-</ResponseField>
-
-<ResponseField name="postId" type="string">
-  The post that was commented on.
+<ResponseField name="commentId" type="string">
+  Unique identifier for the created comment task.
 </ResponseField>
 
 <ResponseField name="accountId" type="string">
   Account that created the comment.
 </ResponseField>
 
+<ResponseField name="username" type="string">
+  TikTok username of the account that created the comment.
+</ResponseField>
+
+<ResponseField name="postLinks" type="array">
+  The TikTok post links that were commented on.
+</ResponseField>
+
 <ResponseField name="text" type="string">
   Comment text.
 </ResponseField>
 
+<ResponseField name="scheduledTime" type="string">
+  ISO 8601 timestamp of when the comment is scheduled to be posted.
+</ResponseField>
+
 <ResponseField name="createdAt" type="string">
-  ISO 8601 timestamp.
+  ISO 8601 timestamp of when the comment task was created.
 </ResponseField>
 
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.infinipost.co/v1/posts/post_abc123/comments \
+curl -X POST https://api.infinipost.co/v1/comments \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "accountId": "acc_123",
-    "text": "Amazing content! 🔥"
+    "postLinks": ["https://www.tiktok.com/@username/video/7123456789012345678"],
+    "text": "Amazing content! 🔥",
+    "scheduledTime": "2024-04-22T12:00:00Z"
   }'
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.infinipost.co/v1/posts/post_abc123/comments', {
+const response = await fetch('https://api.infinipost.co/v1/comments', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -63,7 +86,9 @@ const response = await fetch('https://api.infinipost.co/v1/posts/post_abc123/com
   },
   body: JSON.stringify({
     accountId: 'acc_123',
-    text: 'Amazing content! 🔥'
+    postLinks: ['https://www.tiktok.com/@username/video/7123456789012345678'],
+    text: 'Amazing content! 🔥',
+    scheduledTime: '2024-04-22T12:00:00Z'
   })
 });
 
@@ -76,10 +101,12 @@ const data = await response.json();
 
 ```json Response
 {
-  "id": "cmt_xyz789",
-  "postId": "post_abc123",
+  "commentId": "cmt_xyz789",
   "accountId": "acc_123",
+  "username": "@youraccounthandle",
+  "postLinks": ["https://www.tiktok.com/@username/video/7123456789012345678"],
   "text": "Amazing content! 🔥",
+  "scheduledTime": "2024-04-22T12:00:00Z",
   "createdAt": "2024-04-21T20:25:00Z"
 }
 ```

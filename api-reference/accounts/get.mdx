@@ -1,19 +1,23 @@
 ---
 title: 'Get Account'
-api: 'GET https://api.infinipost.co/v1/accounts/{id}'
+api: 'GET https://api.infinipost.co/v1/accounts/{accountId}'
 description: 'Retrieve details for a specific account'
 ---
 
 ## Path Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="accountId" type="string" required>
   The unique account identifier.
 </ParamField>
 
 ## Response
 
-<ResponseField name="id" type="string">
+<ResponseField name="accountId" type="string">
   Unique identifier for the account.
+</ResponseField>
+
+<ResponseField name="phoneId" type="string">
+  ID of the phone this account belongs to.
 </ResponseField>
 
 <ResponseField name="platform" type="string">
@@ -21,53 +25,39 @@ description: 'Retrieve details for a specific account'
 </ResponseField>
 
 <ResponseField name="name" type="string">
-  Account display name.
+  Display name of the account.
 </ResponseField>
 
 <ResponseField name="username" type="string">
-  Account username.
+  Account username. For TikTok accounts, this is set on Day 5 of warmup and may be empty before then.
 </ResponseField>
 
 <ResponseField name="bio" type="string">
-  Account bio/description.
+  Account bio.
 </ResponseField>
 
-<ResponseField name="profilePictureUrl" type="string">
-  URL of the profile picture.
+<ResponseField name="accountStatus" type="string">
+  Current account status: `created_pending_warmup`, `warming_up`, or `ready`.
 </ResponseField>
 
-<ResponseField name="status" type="string">
-  Current status: `pending`, `active`, `warmup`, or `failed`.
+<ResponseField name="warmupDay" type="number">
+  Current day of the 7-day warmup period. `0` if warmup has not started.
 </ResponseField>
 
-<ResponseField name="stats" type="object">
-  Account statistics.
-  
-  <Expandable title="properties">
-    <ResponseField name="followers" type="number">
-      Number of followers.
-    </ResponseField>
-    
-    <ResponseField name="following" type="number">
-      Number of accounts following.
-    </ResponseField>
-    
-    <ResponseField name="posts" type="number">
-      Number of posts.
-    </ResponseField>
-    
-    <ResponseField name="totalViews" type="number">
-      Total video views.
-    </ResponseField>
-  </Expandable>
+<ResponseField name="warmupStartDate" type="string">
+  ISO 8601 date when warmup started. `null` if warmup has not started.
 </ResponseField>
 
-<ResponseField name="warmupStatus" type="object">
-  Warmup details.
+<ResponseField name="warmupCompletionDate" type="string">
+  ISO 8601 date when warmup will complete. `null` if warmup has not started.
+</ResponseField>
+
+<ResponseField name="profilePicUrl" type="string">
+  URL of the account's profile picture.
 </ResponseField>
 
 <ResponseField name="createdAt" type="string">
-  ISO 8601 timestamp.
+  ISO 8601 timestamp of when the account was created.
 </ResponseField>
 
 <RequestExample>
@@ -104,25 +94,18 @@ print(response.json())
 
 ```json Response
 {
-  "id": "acc_1a2b3c4d5e",
+  "accountId": "acc_1a2b3c4d5e",
+  "phoneId": "phone_abc123",
   "platform": "tiktok",
   "name": "Fashion Insider",
   "username": "fashioninsider",
   "bio": "Daily fashion tips and trends 👗",
-  "profilePictureUrl": "https://storage.googleapis.com/...",
-  "status": "active",
-  "stats": {
-    "followers": 1247,
-    "following": 523,
-    "posts": 42,
-    "totalViews": 18293
-  },
-  "warmupStatus": {
-    "enabled": true,
-    "currentDay": 7,
-    "completedAt": "2024-04-21T10:00:00Z"
-  },
-  "createdAt": "2024-04-14T19:30:00Z"
+  "accountStatus": "warming_up",
+  "warmupDay": 3,
+  "warmupStartDate": "2024-04-19T10:00:00Z",
+  "warmupCompletionDate": "2024-04-26T10:00:00Z",
+  "profilePicUrl": "https://storage.googleapis.com/...",
+  "createdAt": "2024-04-19T10:00:00Z"
 }
 ```
 

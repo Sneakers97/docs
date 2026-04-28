@@ -1,0 +1,131 @@
+---
+title: 'Upload Sound'
+api: 'POST https://api.infinipost.co/v1/media/sounds'
+description: 'Upload an audio file to use in posts'
+---
+
+## Request Body
+
+<ParamField body="soundUrl" type="string" required>
+  TikTok video URL containing the sound you want to extract.
+  
+  **How to get the URL:**
+  1. Open TikTok on your computer at https://www.tiktok.com/
+  2. Find the video whose music you want to use
+  3. Right-click and select "View video details"
+  4. On the details page, copy the entire URL
+</ParamField>
+
+<ParamField body="name" type="string">
+  Custom name for the sound (optional). If not provided, the sound name from TikTok will be used.
+</ParamField>
+
+## Response
+
+<ResponseField name="soundId" type="string">
+  Unique identifier for the uploaded sound.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Name of the sound.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Storage URL of the uploaded sound file.
+</ResponseField>
+
+<ResponseField name="duration" type="number">
+  Duration of the audio in seconds.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 timestamp of when the sound was uploaded.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/media/sounds \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "soundUrl": "https://www.tiktok.com/@username/video/7123456789012345678",
+    "name": "Viral Beat 2024"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/media/sounds', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    soundUrl: 'https://www.tiktok.com/@username/video/7123456789012345678',
+    name: 'Viral Beat 2024'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/media/sounds',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'soundUrl': 'https://www.tiktok.com/@username/video/7123456789012345678',
+        'name': 'Viral Beat 2024'
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "soundId": "sound_abc123",
+  "name": "Viral Beat 2024",
+  "url": "https://storage.googleapis.com/.../audio.mp3",
+  "duration": 45.2,
+  "createdAt": "2024-04-21T20:30:00Z"
+}
+```
+
+</ResponseExample>
+
+<Info>
+  **Using Sounds in Posts**
+  
+  After uploading, use the returned `soundId` in the `soundUrl` field when creating video or slideshow posts. The sound will be automatically applied to your TikTok posts.
+</Info>
+
+## Error Responses
+
+```json Invalid TikTok URL
+{
+  "error": {
+    "code": "invalid_url",
+    "message": "Invalid TikTok video URL. Please provide a valid TikTok video URL."
+  }
+}
+```
+
+```json Sound Extraction Failed
+{
+  "error": {
+    "code": "extraction_failed",
+    "message": "Unable to extract sound from the TikTok video. The video may be unavailable or restricted."
+  }
+}
+```

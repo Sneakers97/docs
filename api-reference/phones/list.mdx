@@ -7,46 +7,94 @@ description: 'Retrieve a list of all your cloud phones'
 ## Query Parameters
 
 <ParamField query="status" type="string">
-  Filter by status: `ready`, `provisioning`, or `failed`.
+  Filter by phone status. One of: `ready`, `warming_up`, or `pending_setup`.
 </ParamField>
 
 <ParamField query="limit" type="number" default="50">
   Number of phones to return (max 100).
 </ParamField>
 
-<ParamField query="offset" type="number" default="0">
-  Number of phones to skip for pagination.
+<ParamField query="cursor" type="string">
+  Cursor for pagination. Pass the `nextCursor` value from the previous response to get the next page. Omit for the first page.
 </ParamField>
 
 ## Response
 
 <ResponseField name="data" type="array">
   Array of phone objects.
-</ResponseField>
 
-<ResponseField name="total" type="number">
-  Total number of phones.
+  <Expandable title="Phone object properties">
+    <ResponseField name="phoneId" type="string">
+      Unique identifier for the phone.
+    </ResponseField>
+
+    <ResponseField name="profileName" type="string">
+      Display name of the phone.
+    </ResponseField>
+
+    <ResponseField name="phoneSlot" type="number">
+      The slot number assigned to this phone.
+    </ResponseField>
+
+    <ResponseField name="status" type="string">
+      Current phone status: `ready`, `warming_up`, or `pending_setup`.
+    </ResponseField>
+
+    <ResponseField name="plan" type="string">
+      The plan associated with this phone.
+    </ResponseField>
+
+    <ResponseField name="tiktokConnected" type="boolean">
+      Whether a TikTok account has been created on this phone.
+    </ResponseField>
+
+    <ResponseField name="instagramConnected" type="boolean">
+      Whether an Instagram account has been created on this phone.
+    </ResponseField>
+
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of when the phone was created.
+    </ResponseField>
+
+    <ResponseField name="updatedAt" type="string">
+      ISO 8601 timestamp of when the phone was last updated.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <ResponseField name="hasMore" type="boolean">
   Whether there are more phones beyond this page.
 </ResponseField>
 
+<ResponseField name="nextCursor" type="string">
+  Cursor to pass as the `cursor` query parameter to retrieve the next page. `null` when there are no more pages.
+</ResponseField>
+
 <RequestExample>
 
 ```bash cURL
-curl https://api.infinipost.co/v1/phones?status=ready \
+# First page
+curl https://api.infinipost.co/v1/phones?status=ready&limit=50 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Next page (using cursor from previous response)
+curl https://api.infinipost.co/v1/phones?status=ready&limit=50&cursor=cGhvbmVfYWJjMTIz \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.infinipost.co/v1/phones?status=ready', {
-  headers: {
-    'Authorization': 'Bearer YOUR_API_KEY'
-  }
+// First page
+const response = await fetch('https://api.infinipost.co/v1/phones?status=ready&limit=50', {
+  headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
 });
-
 const data = await response.json();
+
+// Next page
+if (data.hasMore) {
+  const nextResponse = await fetch(`https://api.infinipost.co/v1/phones?status=ready&limit=50&cursor=${data.nextCursor}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+}
 ```
 
 </RequestExample>
@@ -57,15 +105,19 @@ const data = await response.json();
 {
   "data": [
     {
-      "id": "phone_abc123",
-      "geelarkPhoneId": "557536075321468390",
+      "phoneId": "phone_abc123",
+      "profileName": "Premium Phone 1",
+      "phoneSlot": 1,
       "status": "ready",
-      "region": "us",
-      "createdAt": "2024-04-21T20:00:00Z"
+      "plan": "Premium",
+      "tiktokConnected": true,
+      "instagramConnected": false,
+      "createdAt": "2024-04-21T20:00:00Z",
+      "updatedAt": "2024-04-22T10:30:00Z"
     }
   ],
-  "total": 15,
-  "hasMore": true
+  "hasMore": true,
+  "nextCursor": "cGhvbmVfYWJjMTIz"
 }
 ```
 

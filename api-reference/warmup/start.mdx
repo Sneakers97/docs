@@ -1,16 +1,20 @@
 ---
 title: 'Start Warmup'
-api: 'POST https://api.infinipost.co/v1/accounts/{id}/warmup/start'
-description: 'Begin the automated 7-day warmup process'
+api: 'POST https://api.infinipost.co/v1/accounts/{accountId}/warmup/start'
+description: 'Begin the automated warmup process for a TikTok or Instagram account'
 ---
 
 ## Path Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="accountId" type="string" required>
   The unique account identifier.
 </ParamField>
 
 ## Request Body
+
+<ParamField body="duration" type="number" default="7">
+  Number of days for the warmup process (3-14 days).
+</ParamField>
 
 <ParamField body="keywords" type="array">
   Array of keywords to use for content discovery during warmup (e.g., `["fashion", "style", "outfit"]`).
@@ -18,20 +22,14 @@ description: 'Begin the automated 7-day warmup process'
   Default: Platform-appropriate trending keywords.
 </ParamField>
 
-<ParamField body="profilesToFollow" type="array">
-  Array of usernames to follow during warmup (e.g., `["fashionblogger", "styleinspo"]`).
-  
-  Optional: If not provided, accounts will be auto-selected based on keywords.
-</ParamField>
-
-<ParamField body="postsPerDay" type="number" default="3">
-  Number of posts to publish per day during warmup (1-5).
-</ParamField>
-
 ## Response
 
 <ResponseField name="accountId" type="string">
   The account identifier.
+</ResponseField>
+
+<ResponseField name="platform" type="string">
+  Platform: `tiktok` or `instagram`.
 </ResponseField>
 
 <ResponseField name="warmupStatus" type="object">
@@ -42,20 +40,20 @@ description: 'Begin the automated 7-day warmup process'
       Always `true` after starting warmup.
     </ResponseField>
     
-    <ResponseField name="currentDay" type="number">
-      Current day of warmup (1-7).
-    </ResponseField>
-    
     <ResponseField name="startedAt" type="string">
       ISO 8601 timestamp of when warmup started.
     </ResponseField>
     
-    <ResponseField name="keywords" type="array">
-      Keywords being used.
+    <ResponseField name="completionDate" type="string">
+      ISO 8601 timestamp of when warmup is expected to complete.
     </ResponseField>
     
-    <ResponseField name="postsPerDay" type="number">
-      Posts per day configuration.
+    <ResponseField name="duration" type="number">
+      Total duration in days.
+    </ResponseField>
+    
+    <ResponseField name="keywords" type="array">
+      Keywords being used for content discovery.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -67,8 +65,8 @@ curl -X POST https://api.infinipost.co/v1/accounts/acc_1a2b3c4d5e/warmup/start \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "keywords": ["fashion", "ootd", "style"],
-    "postsPerDay": 3
+    "duration": 7,
+    "keywords": ["fashion", "ootd", "style"]
   }'
 ```
 
@@ -80,8 +78,8 @@ const response = await fetch('https://api.infinipost.co/v1/accounts/acc_1a2b3c4d
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    keywords: ['fashion', 'ootd', 'style'],
-    postsPerDay: 3
+    duration: 7,
+    keywords: ['fashion', 'ootd', 'style']
   })
 });
 
@@ -98,8 +96,8 @@ response = requests.post(
         'Content-Type': 'application/json'
     },
     json={
-        'keywords': ['fashion', 'ootd', 'style'],
-        'postsPerDay': 3
+        'duration': 7,
+        'keywords': ['fashion', 'ootd', 'style']
     }
 )
 
@@ -113,13 +111,13 @@ print(response.json())
 ```json Response
 {
   "accountId": "acc_1a2b3c4d5e",
+  "platform": "tiktok",
   "warmupStatus": {
     "enabled": true,
-    "currentDay": 1,
     "startedAt": "2024-04-21T20:00:00Z",
-    "keywords": ["fashion", "ootd", "style"],
-    "postsPerDay": 3,
-    "estimatedCompletionDate": "2024-04-28T20:00:00Z"
+    "completionDate": "2024-04-28T20:00:00Z",
+    "duration": 7,
+    "keywords": ["fashion", "ootd", "style"]
   }
 }
 ```
@@ -129,10 +127,11 @@ print(response.json())
 <Info>
   **What Happens During Warmup?**
   
-  - **Day 1-2:** Light engagement (views, likes)
-  - **Day 3-4:** Follows and comments begin
-  - **Day 5:** TikTok username can be set
-  - **Day 6-7:** Full engagement patterns
+  The warmup process gradually ramps up engagement to mimic authentic user behavior and avoid platform restrictions:
   
-  This gradual ramp-up mimics authentic user behavior and helps avoid platform restrictions.
+  - **Early Days:** Light engagement (views, likes)
+  - **Mid-Point:** Follows and comments begin
+  - **Later Days:** Full engagement patterns established
+  
+  For TikTok: Username can be set after Day 5 of warmup.
 </Info>
