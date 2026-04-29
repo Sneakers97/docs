@@ -74,11 +74,11 @@ description: 'Retrieve a list of all your cloud phones'
 
 ```bash cURL
 # First page
-curl https://api.infinipost.co/v1/phones?status=ready&limit=50 \
+curl "https://api.infinipost.co/v1/phones?status=ready&limit=50" \
   -H "Authorization: Bearer YOUR_API_KEY"
 
 # Next page (using cursor from previous response)
-curl https://api.infinipost.co/v1/phones?status=ready&limit=50&cursor=cGhvbmVfYWJjMTIz \
+curl "https://api.infinipost.co/v1/phones?status=ready&limit=50&cursor=cGhvbmVfYWJjMTIz" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 

@@ -54,11 +54,11 @@ description: 'Retrieve all uploaded sounds for your account'
 
 ```bash cURL
 # First page
-curl https://api.infinipost.co/v1/media/sounds?limit=20 \
+curl "https://api.infinipost.co/v1/media/sounds?limit=20" \
   -H "Authorization: Bearer YOUR_API_KEY"
 
 # Next page
-curl https://api.infinipost.co/v1/media/sounds?limit=20&cursor=c291bmRfYWJjMTIz \
+curl "https://api.infinipost.co/v1/media/sounds?limit=20&cursor=c291bmRfYWJjMTIz" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
