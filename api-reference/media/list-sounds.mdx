@@ -125,3 +125,32 @@ if data['hasMore']:
 ```
 
 </ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Invalid Cursor
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Invalid cursor"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

@@ -174,3 +174,50 @@ print(response.json())
 ```
 
 </ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Missing Required Fields
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "accountIds is required and must be a non-empty array"
+  }
+}
+```
+
+```json Account Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Account(s) not found: acc_1a2b3c4d5e"
+  }
+}
+```
+
+```json Invalid Scheduled Time
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "scheduledTime must be a valid ISO 8601 timestamp"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

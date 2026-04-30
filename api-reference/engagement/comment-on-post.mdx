@@ -112,3 +112,50 @@ const data = await response.json();
 ```
 
 </ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Invalid Parameter
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "postLinks is required and must be a non-empty array"
+  }
+}
+```
+
+```json Account Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Account acc_1a2b3c4d5e not found"
+  }
+}
+```
+
+```json Platform Not Supported
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Commenting is only supported for TikTok accounts"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

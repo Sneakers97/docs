@@ -122,3 +122,41 @@ if (data.hasMore) {
 ```
 
 </ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Invalid Status
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "status must be one of: ready, warming_up, pending_setup"
+  }
+}
+```
+
+```json Invalid Cursor
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Invalid cursor"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

@@ -135,3 +135,41 @@ print(response.json())
   
   For TikTok: Username can be set after Day 5 of warmup.
 </Info>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Account Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Account acc_1a2b3c4d5e not found"
+  }
+}
+```
+
+```json Warmup Already Active
+{
+  "error": {
+    "code": "warmup_already_active",
+    "message": "Warmup is already active for this account"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

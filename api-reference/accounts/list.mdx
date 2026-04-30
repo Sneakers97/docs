@@ -175,3 +175,50 @@ if data['hasMore']:
 ```
 
 </ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Invalid Platform
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "platform must be either 'tiktok' or 'instagram'"
+  }
+}
+```
+
+```json Invalid Status
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "status must be one of: created_pending_warmup, warming_up, ready"
+  }
+}
+```
+
+```json Invalid Cursor
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Invalid cursor"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

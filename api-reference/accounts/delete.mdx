@@ -70,3 +70,32 @@ print(response.json())
 <Warning>
   **This action is permanent!** Deleted accounts cannot be recovered. All associated data, posts, and analytics will be permanently removed.
 </Warning>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Account Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Account acc_1a2b3c4d5e not found"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

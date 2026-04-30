@@ -130,3 +130,50 @@ print(response.json())
 <Info>
   Changes to warmup configuration take effect immediately but won't retroactively affect completed days.
 </Info>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Account Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Account acc_1a2b3c4d5e not found"
+  }
+}
+```
+
+```json Warmup Not Active
+{
+  "error": {
+    "code": "warmup_not_active",
+    "message": "No active warmup found for this account"
+  }
+}
+```
+
+```json Invalid Duration
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Duration must be between 3 and 14 days"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```
