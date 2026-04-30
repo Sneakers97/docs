@@ -56,7 +56,27 @@ description: 'Create and schedule a video post to one or more accounts'
 </ParamField>
 
 <ParamField body="scheduledTime" type="string">
-  ISO 8601 timestamp for when to post. If not provided, posts immediately.
+  Local time to post, in `YYYY-MM-DDTHH:MM` format (e.g. `"2024-04-22T14:00"`). If not provided, posts immediately.
+
+  Interpreted in the timezone specified by the `timezone` parameter.
+</ParamField>
+
+<ParamField body="timezone" type="string" default="America/New_York">
+  IANA timezone for interpreting `scheduledTime`. Supported values:
+
+  | Value | Label |
+  |-------|-------|
+  | `America/New_York` | Eastern (ET) |
+  | `America/Chicago` | Central (CT) |
+  | `America/Denver` | Mountain (MT) |
+  | `America/Los_Angeles` | Pacific (PT) |
+  | `America/Anchorage` | Alaska (AKT) |
+  | `Pacific/Honolulu` | Hawaii (HST) |
+  | `Europe/London` | London (GMT) |
+  | `Europe/Paris` | Paris (CET) |
+  | `Asia/Tokyo` | Tokyo (JST) |
+  | `Asia/Singapore` | Singapore (SGT) |
+  | `Australia/Sydney` | Sydney (AEDT) |
 </ParamField>
 
 ## Response
@@ -102,7 +122,8 @@ curl -X POST https://api.infinipost.co/v1/posts/video \
     "contentUrl": "https://example.com/video.mp4",
     "caption": "Check out this amazing content! #viral",
     "soundId": "sound_abc123",
-    "scheduledTime": "2024-04-22T12:00:00Z"
+    "scheduledTime": "2024-04-22T14:00",
+    "timezone": "America/New_York"
   }'
 ```
 
@@ -118,7 +139,8 @@ const response = await fetch('https://api.infinipost.co/v1/posts/video', {
     contentUrl: 'https://example.com/video.mp4',
     caption: 'Check out this amazing content! #viral',
     soundId: 'sound_abc123',
-    scheduledTime: '2024-04-22T12:00:00Z'
+    scheduledTime: '2024-04-22T14:00',
+    timezone: 'America/New_York'
   })
 });
 
@@ -139,7 +161,8 @@ response = requests.post(
         'contentUrl': 'https://example.com/video.mp4',
         'caption': 'Check out this amazing content! #viral',
         'soundId': 'sound_abc123',
-        'scheduledTime': '2024-04-22T12:00:00Z'
+        'scheduledTime': '2024-04-22T14:00',
+        'timezone': 'America/New_York'
     }
 )
 
@@ -158,7 +181,8 @@ print(response.json())
       "accountId": "acc_123",
       "platform": "tiktok",
       "status": "scheduled",
-      "scheduledTime": "2024-04-22T12:00:00Z",
+      "scheduledTime": "2024-04-22T14:00",
+    "timezone": "America/New_York",
       "createdAt": "2024-04-21T20:15:00Z"
     },
     {
@@ -166,7 +190,8 @@ print(response.json())
       "accountId": "acc_456",
       "platform": "instagram",
       "status": "scheduled",
-      "scheduledTime": "2024-04-22T12:00:00Z",
+      "scheduledTime": "2024-04-22T14:00",
+    "timezone": "America/New_York",
       "createdAt": "2024-04-21T20:15:00Z"
     }
   ]

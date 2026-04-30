@@ -29,7 +29,27 @@ description: 'Create and schedule a slideshow post to one or more accounts'
 </ParamField>
 
 <ParamField body="scheduledTime" type="string">
-  ISO 8601 timestamp for when to post. If not provided, posts immediately.
+  Local time to post, in `YYYY-MM-DDTHH:MM` format (e.g. `"2024-04-22T14:00"`). If not provided, posts immediately.
+
+  Interpreted in the timezone specified by the `timezone` parameter.
+</ParamField>
+
+<ParamField body="timezone" type="string" default="America/New_York">
+  IANA timezone for interpreting `scheduledTime`. Supported values:
+
+  | Value | Label |
+  |-------|-------|
+  | `America/New_York` | Eastern (ET) |
+  | `America/Chicago` | Central (CT) |
+  | `America/Denver` | Mountain (MT) |
+  | `America/Los_Angeles` | Pacific (PT) |
+  | `America/Anchorage` | Alaska (AKT) |
+  | `Pacific/Honolulu` | Hawaii (HST) |
+  | `Europe/London` | London (GMT) |
+  | `Europe/Paris` | Paris (CET) |
+  | `Asia/Tokyo` | Tokyo (JST) |
+  | `Asia/Singapore` | Singapore (SGT) |
+  | `Australia/Sydney` | Sydney (AEDT) |
 </ParamField>
 
 <ParamField body="slideDuration" type="number" default="4">
@@ -105,7 +125,8 @@ curl -X POST https://api.infinipost.co/v1/posts/slideshow \
     "soundId": "sound_abc123",
     "slideDuration": 6,
     "renderAsVideo": false,
-    "scheduledTime": "2024-04-22T12:00:00Z"
+    "scheduledTime": "2024-04-22T14:00",
+    "timezone": "America/New_York"
   }'
 ```
 
@@ -127,7 +148,8 @@ const response = await fetch('https://api.infinipost.co/v1/posts/slideshow', {
     soundId: 'sound_abc123',
     slideDuration: 6,
     renderAsVideo: false,
-    scheduledTime: '2024-04-22T12:00:00Z'
+    scheduledTime: '2024-04-22T14:00',
+    timezone: 'America/New_York'
   })
 });
 
@@ -154,7 +176,8 @@ response = requests.post(
         'soundId': 'sound_abc123',
         'slideDuration': 6,
         'renderAsVideo': False,
-        'scheduledTime': '2024-04-22T12:00:00Z'
+        'scheduledTime': '2024-04-22T14:00',
+        'timezone': 'America/New_York'
     }
 )
 
@@ -173,7 +196,8 @@ print(response.json())
       "accountId": "acc_123",
       "platform": "tiktok",
       "status": "scheduled",
-      "scheduledTime": "2024-04-22T12:00:00Z",
+      "scheduledTime": "2024-04-22T14:00",
+    "timezone": "America/New_York",
       "renderAsVideo": false,
       "createdAt": "2024-04-21T20:15:00Z"
     },
@@ -182,7 +206,8 @@ print(response.json())
       "accountId": "acc_456",
       "platform": "instagram",
       "status": "scheduled",
-      "scheduledTime": "2024-04-22T12:00:00Z",
+      "scheduledTime": "2024-04-22T14:00",
+    "timezone": "America/New_York",
       "renderAsVideo": false,
       "createdAt": "2024-04-21T20:15:00Z"
     }
@@ -223,6 +248,62 @@ print(response.json())
   "error": {
     "code": "not_found",
     "message": "Account acc_123 not found"
+  }
+}
+```
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Missing Required Fields
+{
+  "error": {
+    "code": "missing_required_fields",
+    "message": "contentUrls array is required and cannot be empty"
+  }
+}
+```
+
+```json Invalid Slide Duration
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "slideDuration must be 4, 6, or 8 seconds"
+  }
+}
+```
+
+```json Account Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Account(s) not found: acc_1a2b3c4d5e"
+  }
+}
+```
+
+```json Invalid Scheduled Time
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "scheduledTime must be a valid ISO 8601 timestamp"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
   }
 }
 ```
