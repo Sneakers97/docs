@@ -1,71 +1,73 @@
 ---
 title: 'Get Post'
-api: 'GET https://api.infinipost.co/v1/posts/{id}'
-description: 'Retrieve details for a specific post'
+api: 'GET https://api.infinipost.co/v1/posts/{postId}'
+description: 'Retrieve details for a specific scheduled post'
 ---
 
 ## Path Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="postId" type="string" required>
   The unique post identifier.
 </ParamField>
 
 ## Response
 
-<ResponseField name="id" type="string">
-  Post identifier.
+<ResponseField name="postId" type="string">
+  Unique identifier for the post.
 </ResponseField>
 
 <ResponseField name="accountId" type="string">
-  Associated account ID.
+  The account this post is scheduled for.
 </ResponseField>
 
 <ResponseField name="platform" type="string">
-  Platform (`tiktok` or `instagram`).
+  Platform: `tiktok` or `instagram`.
 </ResponseField>
 
 <ResponseField name="contentType" type="string">
-  `video` or `slideshow`.
+  `video` or `slides`.
+</ResponseField>
+
+<ResponseField name="contentUrl" type="string | array">
+  The content to be posted. When `contentType` is `video`, this is a single URL string. When `contentType` is `slides`, this is an array of image URL strings.
+</ResponseField>
+
+<ResponseField name="thumbnailUrl" type="string">
+  URL of the video thumbnail. `null` for slideshow posts or if not yet generated.
 </ResponseField>
 
 <ResponseField name="caption" type="string">
   Post caption.
 </ResponseField>
 
-<ResponseField name="status" type="string">
-  Status: `scheduled`, `posted`, `failed`.
+<ResponseField name="soundId" type="string">
+  ID of the sound attached to this post. `null` if no sound.
 </ResponseField>
 
-<ResponseField name="stats" type="object">
-  Post performance metrics.
-  
-  <Expandable title="properties">
-    <ResponseField name="views" type="number">
-      Number of views.
-    </ResponseField>
-    
-    <ResponseField name="likes" type="number">
-      Number of likes.
-    </ResponseField>
-    
-    <ResponseField name="comments" type="number">
-      Number of comments.
-    </ResponseField>
-    
-    <ResponseField name="shares" type="number">
-      Number of shares.
-    </ResponseField>
-  </Expandable>
+<ResponseField name="timezone" type="string">
+  IANA timezone the `scheduledTime` was submitted in (e.g. `America/New_York`).
+</ResponseField>
+
+<ResponseField name="scheduledTime" type="string">
+  UTC ISO 8601 timestamp of when the post is scheduled to go live.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `generated`, `pending_render`, `posted`, or `failed`.
 </ResponseField>
 
 <ResponseField name="postedAt" type="string">
-  ISO 8601 timestamp of when posted (if status is `posted`).
+  ISO 8601 timestamp of when the post went live. `null` if not yet posted.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 timestamp of when the post was created.
 </ResponseField>
 
 <RequestExample>
 
 ```bash cURL
-curl https://api.infinipost.co/v1/posts/post_abc123 \
+curl "https://api.infinipost.co/v1/posts/post_abc123" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -83,24 +85,73 @@ const data = await response.json();
 
 <ResponseExample>
 
-```json Response
+```json Video Post
 {
-  "id": "post_abc123",
-  "accountId": "acc_123",
+  "postId": "post_abc123",
+  "accountId": "acc_1a2b3c4d5e",
   "platform": "tiktok",
   "contentType": "video",
+  "contentUrl": "https://storage.googleapis.com/...",
+  "thumbnailUrl": "https://storage.googleapis.com/.../thumb.jpg",
   "caption": "Check out this amazing content! #viral",
+  "soundId": "snd_xyz789",
+  "timezone": "America/New_York",
+  "scheduledTime": "2024-04-22T16:00:00Z",
+  "status": "scheduled",
+  "postedAt": null,
+  "createdAt": "2024-04-21T20:15:00Z"
+}
+```
+
+```json Slideshow Post
+{
+  "postId": "post_def456",
+  "accountId": "acc_1a2b3c4d5e",
+  "platform": "instagram",
+  "contentType": "slides",
+  "contentUrl": [
+    "https://storage.googleapis.com/.../slide1.jpg",
+    "https://storage.googleapis.com/.../slide2.jpg",
+    "https://storage.googleapis.com/.../slide3.jpg"
+  ],
+  "thumbnailUrl": null,
+  "caption": "Step by step tutorial 🔥",
+  "soundId": null,
+  "timezone": "America/Los_Angeles",
+  "scheduledTime": "2024-04-22T19:00:00Z",
   "status": "posted",
-  "stats": {
-    "views": 12847,
-    "likes": 892,
-    "comments": 47,
-    "shares": 23
-  },
-  "scheduledTime": "2024-04-22T12:00:00Z",
-  "postedAt": "2024-04-22T12:00:15Z",
+  "postedAt": "2024-04-22T19:00:12Z",
   "createdAt": "2024-04-21T20:15:00Z"
 }
 ```
 
 </ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Post Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Post post_abc123 not found"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```
