@@ -60,6 +60,8 @@
                 "pages": [
                   "api-reference/posts/create-video",
                   "api-reference/posts/create-slideshow",
+                  "api-reference/posts/list",
+                  "api-reference/posts/edit",
                   "api-reference/posts/get",
                   "api-reference/posts/delete"
                 ]
@@ -104,13 +106,13 @@
     "links": [
       {
         "label": "Dashboard",
-        "href": "https://infinipost.co"
+        "href": "https://app.infinipost.co"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://infinipost.co"
+      "href": "https://app.infinipost.co"
     }
   },
   "footer": {

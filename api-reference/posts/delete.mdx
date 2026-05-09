@@ -1,42 +1,64 @@
 ---
 title: 'Delete Post'
-api: 'DELETE https://api.infinipost.co/v1/posts/{id}'
-description: 'Delete a post from TikTok or Instagram'
+api: 'DELETE https://api.infinipost.co/v1/posts'
+description: 'Delete one or more scheduled posts'
 ---
 
-## Path Parameters
+<Info>
+  Only posts with a status of `generated` or `pending_render` can be deleted. Posts that have already been posted cannot be deleted.
+</Info>
 
-<ParamField path="id" type="string" required>
-  The unique post identifier.
+## Request Body
+
+<ParamField body="postIds" type="array" required>
+  Array of post IDs to delete. You can delete a single post or multiple posts in one request.
 </ParamField>
 
 ## Response
 
-<ResponseField name="id" type="string">
-  The deleted post's identifier.
+<ResponseField name="deleted" type="array">
+  Array of post IDs that were successfully deleted.
 </ResponseField>
 
-<ResponseField name="deleted" type="boolean">
-  Always `true` if deletion was successful.
+<ResponseField name="failed" type="array">
+  Array of objects for any post IDs that could not be deleted, with a reason for each.
+
+  <Expandable title="properties">
+    <ResponseField name="postId" type="string">
+      The post ID that failed to delete.
+    </ResponseField>
+
+    <ResponseField name="reason" type="string">
+      Why the deletion failed: `not_found`, `already_posted`, or `permission_denied`.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <ResponseField name="deletedAt" type="string">
-  ISO 8601 timestamp of deletion.
+  ISO 8601 timestamp of when the deletion was processed.
 </ResponseField>
 
 <RequestExample>
 
 ```bash cURL
-curl -X DELETE https://api.infinipost.co/v1/posts/post_abc123 \
-  -H "Authorization: Bearer YOUR_API_KEY"
+curl -X DELETE "https://api.infinipost.co/v1/posts" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "postIds": ["post_abc123", "post_def456"]
+  }'
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.infinipost.co/v1/posts/post_abc123', {
+const response = await fetch('https://api.infinipost.co/v1/posts', {
   method: 'DELETE',
   headers: {
-    'Authorization': 'Bearer YOUR_API_KEY'
-  }
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    postIds: ['post_abc123', 'post_def456']
+  })
 });
 
 const data = await response.json();
@@ -46,16 +68,54 @@ const data = await response.json();
 
 <ResponseExample>
 
-```json Response
+```json All Successful
 {
-  "id": "post_abc123",
-  "deleted": true,
+  "deleted": ["post_abc123", "post_def456"],
+  "failed": [],
+  "deletedAt": "2024-04-21T20:20:00Z"
+}
+```
+
+```json Partial Success
+{
+  "deleted": ["post_abc123"],
+  "failed": [
+    {
+      "postId": "post_def456",
+      "reason": "already_posted"
+    }
+  ],
   "deletedAt": "2024-04-21T20:20:00Z"
 }
 ```
 
 </ResponseExample>
 
-<Warning>
-  Scheduled posts can be deleted before posting. Posted content will be removed from the platform.
-</Warning>
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Missing Required Fields
+{
+  "error": {
+    "code": "missing_required_fields",
+    "message": "postIds is required and must be a non-empty array"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

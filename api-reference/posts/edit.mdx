@@ -1,0 +1,200 @@
+---
+title: 'Edit Post'
+api: 'PATCH https://api.infinipost.co/v1/posts/{postId}'
+description: 'Update a scheduled post before it goes live'
+---
+
+<Info>
+  Only posts with a status of `generated` or `pending_render` can be edited. Attempting to edit a post that has already been posted or failed will return an error.
+</Info>
+
+## Path Parameters
+
+<ParamField path="postId" type="string" required>
+  The unique post identifier.
+</ParamField>
+
+## Request Body
+
+All fields are optional. Only include the fields you want to update.
+
+<ParamField body="caption" type="string">
+  Updated caption for the post.
+</ParamField>
+
+<ParamField body="scheduledTime" type="string">
+  Updated local time to post, in `YYYY-MM-DDTHH:MM` format (e.g. `"2024-04-22T14:00"`). Interpreted in the timezone specified by the `timezone` parameter.
+</ParamField>
+
+<ParamField body="timezone" type="string">
+  IANA timezone for interpreting `scheduledTime`. Required if `scheduledTime` is provided. Supported values:
+
+  | Value | Label |
+  |-------|-------|
+  | `America/New_York` | Eastern (ET) |
+  | `America/Chicago` | Central (CT) |
+  | `America/Denver` | Mountain (MT) |
+  | `America/Los_Angeles` | Pacific (PT) |
+  | `America/Anchorage` | Alaska (AKT) |
+  | `Pacific/Honolulu` | Hawaii (HST) |
+  | `Europe/London` | London (GMT) |
+  | `Europe/Paris` | Paris (CET) |
+  | `Asia/Tokyo` | Tokyo (JST) |
+  | `Asia/Singapore` | Singapore (SGT) |
+  | `Australia/Sydney` | Sydney (AEDT) |
+</ParamField>
+
+<ParamField body="contentType" type="string">
+  Updated content type: `video` or `slides`. Must be provided alongside `contentUrl` if changing content.
+</ParamField>
+
+<ParamField body="contentUrl" type="string | array">
+  Updated content URL. When `contentType` is `video`, provide a single URL string. When `contentType` is `slides`, provide an array of image URL strings.
+</ParamField>
+
+<ParamField body="soundId" type="string">
+  Sound ID to attach to the post. If omitted the post will have no TikTok sound attached. Only applicable for TikTok posts.
+</ParamField>
+
+## Response
+
+<ResponseField name="postId" type="string">
+  Unique identifier for the post.
+</ResponseField>
+
+<ResponseField name="accountId" type="string">
+  The account this post is scheduled for.
+</ResponseField>
+
+<ResponseField name="platform" type="string">
+  Platform: `tiktok` or `instagram`.
+</ResponseField>
+
+<ResponseField name="contentType" type="string">
+  `video` or `slides`.
+</ResponseField>
+
+<ResponseField name="contentUrl" type="string | array">
+  The content to be posted. When `contentType` is `video`, this is a single URL string. When `contentType` is `slides`, this is an array of image URL strings.
+</ResponseField>
+
+<ResponseField name="thumbnailUrl" type="string">
+  URL of the video thumbnail. `null` for slideshow posts or if not yet generated.
+</ResponseField>
+
+<ResponseField name="caption" type="string">
+  Post caption.
+</ResponseField>
+
+<ResponseField name="soundId" type="string">
+  ID of the sound attached to this post. `null` if no sound.
+</ResponseField>
+
+<ResponseField name="timezone" type="string">
+  IANA timezone the `scheduledTime` was submitted in.
+</ResponseField>
+
+<ResponseField name="scheduledTime" type="string">
+  UTC ISO 8601 timestamp of when the post is scheduled to go live.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `generated` or `pending_render`.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 timestamp of when the post was created.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X PATCH "https://api.infinipost.co/v1/posts/post_abc123" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "caption": "Updated caption! #trending",
+    "scheduledTime": "2024-04-22T15:00",
+    "timezone": "America/New_York",
+    "soundId": "snd_xyz789"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/posts/post_abc123', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    caption: 'Updated caption! #trending',
+    scheduledTime: '2024-04-22T15:00',
+    timezone: 'America/New_York',
+    soundId: 'snd_xyz789'
+  })
+});
+
+const data = await response.json();
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "postId": "post_abc123",
+  "accountId": "acc_1a2b3c4d5e",
+  "platform": "tiktok",
+  "contentType": "video",
+  "contentUrl": "https://storage.googleapis.com/...",
+  "thumbnailUrl": "https://storage.googleapis.com/.../thumb.jpg",
+  "caption": "Updated caption! #trending",
+  "soundId": "snd_xyz789",
+  "timezone": "America/New_York",
+  "scheduledTime": "2024-04-22T19:00:00Z",
+  "status": "generated",
+  "createdAt": "2024-04-21T20:15:00Z"
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Post Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Post post_abc123 not found"
+  }
+}
+```
+
+```json Post Already Posted
+{
+  "error": {
+    "code": "cannot_edit",
+    "message": "Only posts with status 'generated' or 'pending_render' can be edited"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

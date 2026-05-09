@@ -1,0 +1,213 @@
+---
+title: 'List Posts'
+api: 'GET https://api.infinipost.co/v1/posts'
+description: 'Retrieve a paginated list of your scheduled and posted content'
+---
+
+## Query Parameters
+
+<ParamField query="status" type="string">
+  Filter by post status: `generated`, `pending_render`, `posted`, or `failed`.
+</ParamField>
+
+<ParamField query="platform" type="string">
+  Filter by platform: `tiktok` or `instagram`.
+</ParamField>
+
+<ParamField query="contentType" type="string">
+  Filter by content type: `video` or `slides`.
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Filter by a specific account ID.
+</ParamField>
+
+<ParamField query="limit" type="number" default="50">
+  Number of posts to return (max 100).
+</ParamField>
+
+<ParamField query="cursor" type="string">
+  Cursor for pagination. Pass the `nextCursor` value from the previous response to get the next page. Omit for the first page.
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of post objects.
+
+  <Expandable title="Post object properties">
+    <ResponseField name="postId" type="string">
+      Unique identifier for the post.
+    </ResponseField>
+
+    <ResponseField name="accountId" type="string">
+      The account this post is scheduled for.
+    </ResponseField>
+
+    <ResponseField name="platform" type="string">
+      Platform: `tiktok` or `instagram`.
+    </ResponseField>
+
+    <ResponseField name="contentType" type="string">
+      `video` or `slides`.
+    </ResponseField>
+
+    <ResponseField name="contentUrl" type="string | array">
+      The content to be posted. When `contentType` is `video`, this is a single URL string. When `contentType` is `slides`, this is an array of image URL strings.
+    </ResponseField>
+
+    <ResponseField name="thumbnailUrl" type="string">
+      URL of the video thumbnail. `null` for slideshow posts or if not yet generated.
+    </ResponseField>
+
+    <ResponseField name="caption" type="string">
+      Post caption.
+    </ResponseField>
+
+    <ResponseField name="soundId" type="string">
+      ID of the sound attached to this post. `null` if no sound.
+    </ResponseField>
+
+    <ResponseField name="timezone" type="string">
+      IANA timezone the `scheduledTime` was submitted in (e.g. `America/New_York`).
+    </ResponseField>
+
+    <ResponseField name="scheduledTime" type="string">
+      UTC ISO 8601 timestamp of when the post is scheduled to go live.
+    </ResponseField>
+
+    <ResponseField name="status" type="string">
+      Current status: `generated`, `pending_render`, `posted`, or `failed`.
+    </ResponseField>
+
+    <ResponseField name="postedAt" type="string">
+      ISO 8601 timestamp of when the post went live. `null` if not yet posted.
+    </ResponseField>
+
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of when the post was created.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="hasMore" type="boolean">
+  Whether there are more posts beyond this page.
+</ResponseField>
+
+<ResponseField name="nextCursor" type="string">
+  Cursor to pass as the `cursor` query parameter to retrieve the next page. `null` when there are no more pages.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+# First page
+curl "https://api.infinipost.co/v1/posts?status=generated&limit=50" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Next page
+curl "https://api.infinipost.co/v1/posts?status=generated&limit=50&cursor=cG9zdF9hYmMxMjM" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+// First page
+const response = await fetch('https://api.infinipost.co/v1/posts?status=generated&limit=50', {
+  headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+});
+const data = await response.json();
+
+// Next page
+if (data.hasMore) {
+  const nextResponse = await fetch(`https://api.infinipost.co/v1/posts?status=generated&limit=50&cursor=${data.nextCursor}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+}
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+    {
+      "postId": "post_abc123",
+      "accountId": "acc_1a2b3c4d5e",
+      "platform": "tiktok",
+      "contentType": "video",
+      "contentUrl": "https://storage.googleapis.com/...",
+      "thumbnailUrl": "https://storage.googleapis.com/.../thumb.jpg",
+      "caption": "Check out this amazing content! #viral",
+      "soundId": "snd_xyz789",
+      "timezone": "America/New_York",
+      "scheduledTime": "2024-04-22T16:00:00Z",
+      "status": "generated",
+      "postedAt": null,
+      "createdAt": "2024-04-21T20:15:00Z"
+    },
+    {
+      "postId": "post_def456",
+      "accountId": "acc_1a2b3c4d5e",
+      "platform": "instagram",
+      "contentType": "slides",
+      "contentUrl": [
+        "https://storage.googleapis.com/.../slide1.jpg",
+        "https://storage.googleapis.com/.../slide2.jpg",
+        "https://storage.googleapis.com/.../slide3.jpg"
+      ],
+      "thumbnailUrl": null,
+      "caption": "Step by step tutorial 🔥",
+      "soundId": null,
+      "timezone": "America/Los_Angeles",
+      "scheduledTime": "2024-04-22T19:00:00Z",
+      "status": "posted",
+      "postedAt": "2024-04-22T19:00:12Z",
+      "createdAt": "2024-04-21T20:15:00Z"
+    }
+  ],
+  "hasMore": true,
+  "nextCursor": "cG9zdF9hYmMxMjM"
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+```json Unauthorized
+{
+  "error": {
+    "code": "unauthenticated",
+    "message": "Invalid or missing API key"
+  }
+}
+```
+
+```json Invalid Parameter
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "status must be one of: generated, pending_render, posted, failed"
+  }
+}
+```
+
+```json Invalid Cursor
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Invalid cursor"
+  }
+}
+```
+
+```json Server Error
+{
+  "error": {
+    "code": "internal",
+    "message": "An unexpected error occurred"
+  }
+}
+```

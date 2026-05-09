@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Dashboard",
-      "url": "https://infinipost.co"
+      "url": "https://app.infinipost.co"
     }
   ],
   "topbarCtaButton": {
     "name": "Get Started",
-    "url": "https://infinipost.co"
+    "url": "https://app.infinipost.co"
   },
   "tabs": [
     {
@@ -82,6 +82,8 @@
       "pages": [
         "api-reference/posts/create-video",
         "api-reference/posts/create-slideshow",
+        "api-reference/posts/list",
+        "api-reference/posts/edit",
         "api-reference/posts/get",
         "api-reference/posts/delete"
       ]
