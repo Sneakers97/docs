@@ -81,6 +81,14 @@
                   "api-reference/engagement/reply-to-comment",
                   "api-reference/engagement/get-comments"
                 ]
+              },
+              {
+                "group": "Partners",
+                "pages": [
+                  "api-reference/partners/create-checkout",
+                  "api-reference/partners/get-accounts",
+                  "api-reference/partners/cancel-account"
+                ]
               }
             ]
           }

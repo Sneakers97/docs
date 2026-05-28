@@ -1,0 +1,200 @@
+---
+title: 'Create Checkout'
+api: 'POST https://api.infinipost.co/v1/partners/createCheckout'
+description: 'Create a Stripe Checkout session to purchase TikTok account subscriptions'
+---
+
+## Request Body
+
+<ParamField body="quantity" type="number" required>
+  Number of TikTok accounts to purchase. Must be 1 or greater.
+</ParamField>
+
+<ParamField body="partnerUserId" type="string" required>
+  Your internal user ID for the customer purchasing the accounts. Used to retrieve accounts later via the [Get Accounts](/partners/accounts/list) endpoint.
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  The customer's email address. Used to pre-fill the Stripe Checkout form.
+</ParamField>
+
+<ParamField body="successUrl" type="string" required>
+  URL to redirect the customer to after a successful payment.
+</ParamField>
+
+<ParamField body="cancelUrl" type="string" required>
+  URL to redirect the customer to if they cancel the checkout.
+</ParamField>
+
+<ParamField body="accounts" type="array" required>
+  Array of account objects. Must contain exactly `quantity` items.
+
+  <Expandable title="Account object">
+    <ParamField body="name" type="string" required>
+      Display name for the TikTok account (e.g., "Fashion Creator").
+    </ParamField>
+
+    <ParamField body="bio" type="string">
+      Account bio/description.
+    </ParamField>
+
+    <ParamField body="profilePicUrl" type="string">
+      URL of the profile picture. Must be publicly accessible.
+    </ParamField>
+
+    <ParamField body="warmupKeywords" type="array">
+      Array of keywords used for content discovery during warmup (e.g., `["fashion", "style", "ootd"]`).
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="checkoutUrl" type="string">
+  Stripe Checkout URL. Redirect your customer to this URL to complete payment.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/partners/createCheckout \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "quantity": 2,
+    "partnerUserId": "user_abc123",
+    "email": "customer@example.com",
+    "successUrl": "https://yourapp.com/success",
+    "cancelUrl": "https://yourapp.com/cancel",
+    "accounts": [
+      {
+        "name": "Fashion Creator",
+        "bio": "Daily fashion tips and trends 👗",
+        "profilePicUrl": "https://example.com/pic1.jpg",
+        "warmupKeywords": ["fashion", "style", "ootd"]
+      },
+      {
+        "name": "Style Insider",
+        "bio": "Your daily dose of style inspo ✨",
+        "profilePicUrl": "https://example.com/pic2.jpg",
+        "warmupKeywords": ["style", "trend", "lookbook"]
+      }
+    ]
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/partners/createCheckout', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    quantity: 2,
+    partnerUserId: 'user_abc123',
+    email: 'customer@example.com',
+    successUrl: 'https://yourapp.com/success',
+    cancelUrl: 'https://yourapp.com/cancel',
+    accounts: [
+      {
+        name: 'Fashion Creator',
+        bio: 'Daily fashion tips and trends 👗',
+        profilePicUrl: 'https://example.com/pic1.jpg',
+        warmupKeywords: ['fashion', 'style', 'ootd']
+      },
+      {
+        name: 'Style Insider',
+        bio: 'Your daily dose of style inspo ✨',
+        profilePicUrl: 'https://example.com/pic2.jpg',
+        warmupKeywords: ['style', 'trend', 'lookbook']
+      }
+    ]
+  })
+});
+
+const data = await response.json();
+// Redirect customer to data.checkoutUrl
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/partners/createCheckout',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'quantity': 2,
+        'partnerUserId': 'user_abc123',
+        'email': 'customer@example.com',
+        'successUrl': 'https://yourapp.com/success',
+        'cancelUrl': 'https://yourapp.com/cancel',
+        'accounts': [
+            {
+                'name': 'Fashion Creator',
+                'bio': 'Daily fashion tips and trends 👗',
+                'profilePicUrl': 'https://example.com/pic1.jpg',
+                'warmupKeywords': ['fashion', 'style', 'ootd']
+            },
+            {
+                'name': 'Style Insider',
+                'bio': 'Your daily dose of style inspo ✨',
+                'profilePicUrl': 'https://example.com/pic2.jpg',
+                'warmupKeywords': ['style', 'trend', 'lookbook']
+            }
+        ]
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "checkoutUrl": "https://checkout.stripe.com/c/pay/cs_live_..."
+}
+```
+
+</ResponseExample>
+
+## Account Provisioning Process
+
+After the customer completes payment:
+
+1. **Payment confirmed**: Stripe processes the payment and notifies Infinipost
+2. **Phone provisioning**: Phones are created and configured with proxies
+3. **Account creation** (a few hours): TikTok accounts are set up on each phone with the provided details
+4. **Warmup** (7 days): Accounts go through a gradual warmup period before posting
+
+You can poll the [Get Accounts](/partners/accounts/list) endpoint to check account status.
+
+<Info>
+  **Pricing:** Each TikTok account is billed at $20/month as a recurring subscription. Subscriptions are managed per account and can be cancelled individually via the [Cancel Account](/partners/accounts/cancel) endpoint.
+</Info>
+
+## Error Responses
+
+```json Invalid API Key
+{
+  "error": "This API key does not have partner access"
+}
+```
+
+```json Missing Required Fields
+{
+  "error": "quantity must be >= 1"
+}
+```
+
+```json Accounts Array Mismatch
+{
+  "error": "accounts array must have exactly 2 items"
+}
+```

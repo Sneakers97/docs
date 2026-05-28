@@ -1,0 +1,102 @@
+---
+title: 'Cancel Account'
+api: 'POST https://api.infinipost.co/v1/partners/cancelAccount'
+description: 'Cancel the subscription for a specific TikTok account'
+---
+
+## Request Body
+
+<ParamField body="accountId" type="string" required>
+  The unique account ID to cancel. Retrieve this from the [Get Accounts](/partners/accounts/list) endpoint.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Returns `true` if the account was successfully cancelled.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/partners/cancelAccount \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accountId": "acc_9n2x7yp0dg"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/partners/cancelAccount', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    accountId: 'acc_9n2x7yp0dg'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/partners/cancelAccount',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'accountId': 'acc_9n2x7yp0dg'
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true
+}
+```
+
+</ResponseExample>
+
+## Cancellation Details
+
+- The Stripe subscription is cancelled immediately with prorated billing
+- The account status is updated to `cancelled` in Infinipost
+- Cancelled accounts cannot be reactivated — a new checkout session must be created to purchase a replacement account
+
+<Warning>
+  **This action is irreversible.** Once an account is cancelled, it cannot be reactivated. Make sure to confirm with your user before calling this endpoint.
+</Warning>
+
+## Error Responses
+
+```json Invalid API Key
+{
+  "error": "This API key does not have partner access"
+}
+```
+
+```json Missing Required Fields
+{
+  "error": "accountId is required"
+}
+```
+
+```json Account Not Found
+{
+  "error": "Account not found"
+}
+```

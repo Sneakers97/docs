@@ -1,0 +1,141 @@
+---
+title: 'Get Accounts'
+api: 'GET https://api.infinipost.co/v1/partners/accounts'
+description: 'Retrieve all TikTok accounts for a specific user'
+---
+
+## Query Parameters
+
+<ParamField query="partnerUserId" type="string" required>
+  Your internal user ID for the customer. Must match the `partnerUserId` used when creating the checkout session.
+</ParamField>
+
+## Response
+
+<ResponseField name="accounts" type="array">
+  Array of account objects for the specified user.
+
+  <Expandable title="Account object">
+    <ResponseField name="accountId" type="string">
+      Unique identifier for the account.
+    </ResponseField>
+
+    <ResponseField name="name" type="string">
+      The account's display name.
+    </ResponseField>
+
+    <ResponseField name="username" type="string">
+      The account's TikTok username. May be `null` for accounts still in early warmup (before Day 5).
+    </ResponseField>
+
+    <ResponseField name="status" type="string">
+      Current account status: `pending_creation`, `warming_up`, `ready`, or `cancelled`.
+    </ResponseField>
+
+    <ResponseField name="phoneId" type="string">
+      Internal phone identifier associated with this account.
+    </ResponseField>
+
+    <ResponseField name="stripeSubscriptionId" type="string">
+      Stripe subscription ID for this account's billing. Use this to reference the subscription if needed.
+    </ResponseField>
+
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of when the account was created.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET 'https://api.infinipost.co/v1/partners/accounts?partnerUserId=user_abc123' \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const response = await fetch(
+  'https://api.infinipost.co/v1/partners/accounts?partnerUserId=user_abc123',
+  {
+    headers: {
+      'Authorization': 'Bearer YOUR_API_KEY'
+    }
+  }
+);
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.infinipost.co/v1/partners/accounts',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY'
+    },
+    params={
+        'partnerUserId': 'user_abc123'
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "accounts": [
+    {
+      "accountId": "acc_9n2x7yp0dg",
+      "name": "Fashion Creator",
+      "username": "fashioncreator22",
+      "status": "ready",
+      "phoneId": "abc123",
+      "stripeSubscriptionId": "sub_1234567890",
+      "createdAt": "2024-04-21T19:30:00Z"
+    },
+    {
+      "accountId": "acc_4qxstggdbuh",
+      "name": "Style Insider",
+      "username": null,
+      "status": "pending_creation",
+      "phoneId": "def456",
+      "stripeSubscriptionId": "sub_0987654321",
+      "createdAt": "2024-04-21T19:30:00Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Account Statuses
+
+| Status | Description |
+|--------|-------------|
+| `pending_creation` | Phone is provisioned, TikTok account is being set up |
+| `warming_up` | Account is created and going through the 7-day warmup period |
+| `ready` | Account is fully warmed up and ready for content posting |
+| `cancelled` | Account subscription has been cancelled |
+
+<Info>
+  **Username availability:** TikTok usernames are only set after Day 5 of the warmup period. Before then, the `username` field will be `null`.
+</Info>
+
+## Error Responses
+
+```json Invalid API Key
+{
+  "error": "This API key does not have partner access"
+}
+```
+
+```json Missing Required Fields
+{
+  "error": "partnerUserId is required"
+}
+```
