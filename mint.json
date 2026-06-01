@@ -109,7 +109,9 @@
       "pages": [
         "api-reference/partners/create-checkout",
         "api-reference/partners/get-accounts",
-        "api-reference/partners/cancel-account"
+        "api-reference/partners/cancel-account",
+        "api-reference/partners/replace-account",
+        "api-reference/partners/refund"
       ]
     }
   ],

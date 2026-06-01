@@ -1,0 +1,110 @@
+---
+title: 'Replace Account'
+api: 'POST https://api.infinipost.co/v1/partners/replaceAccount'
+description: 'Request a replacement TikTok account using the existing account details'
+---
+
+## Request Body
+
+<ParamField body="accountId" type="string" required>
+  The unique account ID to replace. Retrieve this from the [Get Accounts](/partners/accounts/list) endpoint.
+</ParamField>
+
+<ParamField body="reason" type="string">
+  Optional reason for the replacement request (e.g., "Account banned", "Login issue").
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Returns `true` if the replacement request was successfully submitted.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.infinipost.co/v1/partners/replaceAccount \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accountId": "acc_9n2x7yp0dg",
+    "reason": "Account was banned"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.infinipost.co/v1/partners/replaceAccount', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    accountId: 'acc_9n2x7yp0dg',
+    reason: 'Account was banned'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.infinipost.co/v1/partners/replaceAccount',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'accountId': 'acc_9n2x7yp0dg',
+        'reason': 'Account was banned'
+    }
+)
+
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true
+}
+```
+
+</ResponseExample>
+
+## Replacement Details
+
+- The existing account's details (name, bio, profile picture, warmup keywords) are automatically used for the replacement
+- A new TikTok account will be created on the same phone
+- The replacement account goes through the same setup and warmup process as a new account
+- You can poll the [Get Accounts](/partners/accounts/list) endpoint to check the status of the replacement
+
+<Info>
+  **Billing:** Account replacement does not affect the existing subscription. The $20/month billing continues uninterrupted.
+</Info>
+
+## Error Responses
+
+```json Invalid API Key
+{
+  "error": "This API key does not have partner access"
+}
+```
+
+```json Missing Required Fields
+{
+  "error": "accountId is required"
+}
+```
+
+```json Account Not Found
+{
+  "error": "Account not found"
+}
+```
