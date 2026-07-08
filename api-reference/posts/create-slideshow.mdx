@@ -28,6 +28,10 @@ description: 'Create and schedule a slideshow post to one or more accounts'
   See [Upload Sound](/api-reference/media/upload-sound) for how to import sounds from TikTok.
 </ParamField>
 
+<ParamField body="markAI" type="boolean" default="false">
+  When `true`, adds an AI-generated content label to the post.
+</ParamField>
+
 <ParamField body="scheduledTime" type="string">
   Local time to post, in `YYYY-MM-DDTHH:MM` format (e.g. `"2024-04-22T14:00"`). If not provided, posts immediately.
 
@@ -123,6 +127,7 @@ curl -X POST https://api.infinipost.co/v1/posts/slideshow \
     ],
     "caption": "Swipe for more! 👉",
     "soundId": "sound_abc123",
+    "markAI": false,
     "slideDuration": 6,
     "renderAsVideo": false,
     "scheduledTime": "2024-04-22T14:00",
@@ -146,6 +151,7 @@ const response = await fetch('https://api.infinipost.co/v1/posts/slideshow', {
     ],
     caption: 'Swipe for more! 👉',
     soundId: 'sound_abc123',
+    markAI: false,
     slideDuration: 6,
     renderAsVideo: false,
     scheduledTime: '2024-04-22T14:00',
@@ -174,6 +180,7 @@ response = requests.post(
         ],
         'caption': 'Swipe for more! 👉',
         'soundId': 'sound_abc123',
+        'markAI': False,
         'slideDuration': 6,
         'renderAsVideo': False,
         'scheduledTime': '2024-04-22T14:00',
@@ -222,35 +229,6 @@ print(response.json())
 
   By default, slideshows are posted as native image carousels on both TikTok and Instagram. Set `renderAsVideo: true` to render them into a video first — useful when you want to attach a sound to an Instagram post or ensure video format. Video rendering happens in the background; posts will show a `pending_render` status until rendering is complete, then move to `scheduled`.
 </Info>
-
-## Error Responses
-
-```json Invalid Slide Duration
-{
-  "error": {
-    "code": "invalid_parameter",
-    "message": "slideDuration must be 4, 6, or 8 seconds"
-  }
-}
-```
-
-```json Missing Content
-{
-  "error": {
-    "code": "missing_required_fields",
-    "message": "contentUrls array is required and cannot be empty"
-  }
-}
-```
-
-```json Account Not Found
-{
-  "error": {
-    "code": "not_found",
-    "message": "Account acc_123 not found"
-  }
-}
-```
 
 ## Error Responses
 
