@@ -53,11 +53,19 @@ description: 'Retrieve details for a specific scheduled post'
 </ResponseField>
 
 <ResponseField name="status" type="string">
-  Current status: `generated`, `pending_render`, `posted`, or `failed`.
+  Current status: `generated`, `pending_render`, `posted`, or `failed`. When `failed`, see the `error` field for a description of what went wrong.
+</ResponseField>
+
+<ResponseField name="error" type="string">
+  Human-readable description of why the post failed. Only present when `status` is `failed`. `null` otherwise.
 </ResponseField>
 
 <ResponseField name="postedAt" type="string">
   ISO 8601 timestamp of when the post went live. `null` if not yet posted.
+</ResponseField>
+
+<ResponseField name="failedAt" type="string">
+  ISO 8601 timestamp of when the post failed. `null` if the post has not failed.
 </ResponseField>
 
 <ResponseField name="createdAt" type="string">
@@ -97,8 +105,10 @@ const data = await response.json();
   "soundId": "snd_xyz789",
   "timezone": "America/New_York",
   "scheduledTime": "2024-04-22T16:00:00Z",
-  "status": "scheduled",
-  "postedAt": null,
+  "status": "posted",
+  "error": null,
+  "postedAt": "2024-04-22T16:00:08Z",
+  "failedAt": null,
   "createdAt": "2024-04-21T20:15:00Z"
 }
 ```
@@ -120,7 +130,29 @@ const data = await response.json();
   "timezone": "America/Los_Angeles",
   "scheduledTime": "2024-04-22T19:00:00Z",
   "status": "posted",
+  "error": null,
   "postedAt": "2024-04-22T19:00:12Z",
+  "failedAt": null,
+  "createdAt": "2024-04-21T20:15:00Z"
+}
+```
+
+```json Failed Post
+{
+  "postId": "post_ghi789",
+  "accountId": "acc_1a2b3c4d5e",
+  "platform": "tiktok",
+  "contentType": "video",
+  "contentUrl": "https://storage.googleapis.com/...",
+  "thumbnailUrl": null,
+  "caption": "Check out this! #viral",
+  "soundId": "snd_xyz789",
+  "timezone": "America/New_York",
+  "scheduledTime": "2024-04-22T16:00:00Z",
+  "status": "failed",
+  "error": "Sound is not available for use due to copyright or is not available in the account's country or region.",
+  "postedAt": null,
+  "failedAt": "2024-04-22T16:02:14Z",
   "createdAt": "2024-04-21T20:15:00Z"
 }
 ```
