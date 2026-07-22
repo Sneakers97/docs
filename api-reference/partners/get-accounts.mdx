@@ -1,7 +1,7 @@
 ---
 title: 'Get Accounts'
 api: 'GET https://api.infinipost.co/v1/partners/accounts'
-description: 'Retrieve all TikTok accounts for a specific user'
+description: 'Retrieve all TikTok and Instagram accounts for a specific user'
 ---
 
 ## Query Parameters
@@ -20,12 +20,16 @@ description: 'Retrieve all TikTok accounts for a specific user'
       Unique identifier for the account.
     </ResponseField>
 
+    <ResponseField name="platform" type="string">
+      The platform this account belongs to: `tiktok` or `instagram`.
+    </ResponseField>
+
     <ResponseField name="name" type="string">
       The account's display name.
     </ResponseField>
 
     <ResponseField name="username" type="string">
-      The account's TikTok username. May be `null` for accounts still in early warmup (before Day 5).
+      The account's username. May be `null` for accounts still in early warmup.
     </ResponseField>
 
     <ResponseField name="status" type="string">
@@ -91,6 +95,7 @@ print(response.json())
   "accounts": [
     {
       "accountId": "acc_9n2x7yp0dg",
+      "platform": "tiktok",
       "name": "Fashion Creator",
       "username": "fashioncreator22",
       "status": "ready",
@@ -100,6 +105,17 @@ print(response.json())
     },
     {
       "accountId": "acc_4qxstggdbuh",
+      "platform": "instagram",
+      "name": "Fashion Creator",
+      "username": null,
+      "status": "warming_up",
+      "phoneId": "abc123",
+      "stripeSubscriptionId": "sub_1234567890",
+      "createdAt": "2024-04-21T19:30:00Z"
+    },
+    {
+      "accountId": "acc_7rzpqhmnx12",
+      "platform": "tiktok",
       "name": "Style Insider",
       "username": null,
       "status": "pending_creation",
@@ -117,13 +133,13 @@ print(response.json())
 
 | Status | Description |
 |--------|-------------|
-| `pending_creation` | Phone is provisioned, TikTok account is being set up |
-| `warming_up` | Account is created and going through the 7-day warmup period |
+| `pending_creation` | Phone is provisioned, account is being set up |
+| `warming_up` | Account is created and going through the 3-day warmup period |
 | `ready` | Account is fully warmed up and ready for content posting |
 | `cancelled` | Account subscription has been cancelled |
 
 <Info>
-  **Username availability:** TikTok usernames are only set after Day 5 of the warmup period. Before then, the `username` field will be `null`.
+  **Username availability:** TikTok usernames are set on Day 3 of the warmup period and may be `null` before then.
 </Info>
 
 ## Error Responses
