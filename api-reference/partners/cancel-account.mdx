@@ -1,41 +1,41 @@
 ---
-title: 'Cancel Account'
-api: 'POST https://api.infinipost.co/v1/partners/cancelAccount'
-description: 'Cancel the subscription for a specific TikTok account'
+title: 'Cancel Accounts'
+api: 'POST https://api.infinipost.co/v1/partners/cancelAccountss'
+description: 'Cancel the subscription for a customer, cancelling all accounts associated with it at the end of the billing period'
 ---
 
 ## Request Body
 
-<ParamField body="accountId" type="string" required>
-  The unique account ID to cancel. Retrieve this from the [Get Accounts](/partners/accounts/list) endpoint.
+<ParamField body="stripeSubscriptionId" type="string" required>
+  The Stripe subscription ID to cancel. Since a subscription covers multiple accounts, this cancels all accounts associated with it. Retrieve the subscription ID from the [Get Accounts](/partners/accounts/list) endpoint.
 </ParamField>
 
 ## Response
 
 <ResponseField name="success" type="boolean">
-  Returns `true` if the account was successfully cancelled.
+  Returns `true` if the subscription was successfully queued for cancellation.
 </ResponseField>
 
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.infinipost.co/v1/partners/cancelAccount \
+curl -X POST https://api.infinipost.co/v1/partners/cancelAccounts \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "accountId": "acc_9n2x7yp0dg"
+    "stripeSubscriptionId": "sub_1234567890"
   }'
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.infinipost.co/v1/partners/cancelAccount', {
+const response = await fetch('https://api.infinipost.co/v1/partners/cancelAccounts', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    accountId: 'acc_9n2x7yp0dg'
+    stripeSubscriptionId: 'sub_1234567890'
   })
 });
 
@@ -46,13 +46,13 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.infinipost.co/v1/partners/cancelAccount',
+    'https://api.infinipost.co/v1/partners/cancelAccounts',
     headers={
         'Authorization': 'Bearer YOUR_API_KEY',
         'Content-Type': 'application/json'
     },
     json={
-        'accountId': 'acc_9n2x7yp0dg'
+        'stripeSubscriptionId': 'sub_1234567890'
     }
 )
 
@@ -73,12 +73,13 @@ print(response.json())
 
 ## Cancellation Details
 
-- The Stripe subscription is cancelled immediately with prorated billing
-- The account status is updated to `cancelled` in Infinipost
-- Cancelled accounts cannot be reactivated — a new checkout session must be created to purchase a replacement account
+- The subscription is set to cancel at the end of the current billing period — the customer keeps access until then
+- All accounts under the subscription are updated to `pending_cancellation`
+- When the billing period ends, accounts are automatically moved to `cancelled` and removed from Infinipost
+- Cancelled accounts cannot be reactivated — a new checkout session must be created to purchase replacement accounts
 
 <Warning>
-  **This action is irreversible.** Once an account is cancelled, it cannot be reactivated. Make sure to confirm with your user before calling this endpoint.
+  **This action is irreversible.** Once a subscription is cancelled it cannot be reactivated. Make sure to confirm with your user before calling this endpoint.
 </Warning>
 
 ## Error Responses
@@ -91,12 +92,6 @@ print(response.json())
 
 ```json Missing Required Fields
 {
-  "error": "accountId is required"
-}
-```
-
-```json Account Not Found
-{
-  "error": "Account not found"
+  "error": "stripeSubscriptionId is required"
 }
 ```
